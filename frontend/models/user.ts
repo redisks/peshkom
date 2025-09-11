@@ -1,8 +1,7 @@
-// models/User.ts
 import { Schema, model, models, Document } from 'mongoose';
+import { hashPassword } from '@/lib/bcrypt';
 
 export interface IUser extends Document {
-  username: string;
   email: string;
   password: string;
   createdAt: Date;
@@ -11,13 +10,6 @@ export interface IUser extends Document {
 
 const UserSchema = new Schema<IUser>(
   {
-    username: {
-      type: String,
-      required: [true, 'Username is required'],
-      unique: true,
-      trim: true,
-      minlength: [3, 'Username must be at least 3 characters long'],
-    },
     email: {
       type: String,
       required: [true, 'Email is required'],
@@ -35,7 +27,18 @@ const UserSchema = new Schema<IUser>(
   }
 );
 
-// Проверяем, существует ли модель, чтобы избежать переопределения
+// Хэширование пароля перед сохранением
+UserSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
+  
+  try {
+    this.password = await hashPassword(this.password);
+    next();
+  } catch (error: any) {
+    next(error);
+  }
+});
+
 const User = models.User || model<IUser>('User', UserSchema);
 
 export default User;
