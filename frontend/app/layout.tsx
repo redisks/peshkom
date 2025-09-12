@@ -1,11 +1,23 @@
-// app/layout.tsx
+"use client";
+
 import "./globals.css";
-import type { Metadata } from "next";
 import { Inter, Unbounded } from "next/font/google";
 import { AuthProvider } from "@/context/AuthContext";
 import AuthCheck from "@/components/AuthCheck";
-import Script from "next/script";
-import Head from "next/head";
+import {
+  MoveLeft,
+  ArrowLeft,
+  CircleUser,
+  Footprints,
+  PanelTop,
+  MessageCircleHeart,
+  Focus,
+  Sparkle,
+  Share,
+} from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
+import { YMaps } from '@iminside/react-yandex-maps';
 
 const unbounded = Unbounded({
   subsets: ["latin", "cyrillic"],
@@ -18,25 +30,95 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
-export const metadata: Metadata = {
-  title: "peshkom",
-  description: "PESHKOM",
-};
-
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
+  const pathname = usePathname();
+
   return (
     <>
       <html lang="en">
         <body
-          className={`${inter.variable} ${unbounded.variable} p-5 h-screen w-screen bg-background text-light-black overflow-x-hiddenT ${inter.className}`}
+          className={`${inter.variable} ${unbounded.variable} h-screen w-screen bg-background text-light-black overflow-x-hiddenT ${inter.className}`}
         >
-          <AuthProvider>
-            <AuthCheck>{children}</AuthCheck>
-          </AuthProvider>
+          <YMaps>
+            <AuthProvider>
+              <AuthCheck>
+                <div className="flex justify-center w-full">
+                  {pathname.includes("/auth") ||
+                  pathname.includes("/map") ? null : pathname.includes(
+                      "place/"
+                    ) ? (
+                    <header className="w-full flex justify-between p-5 fixed top-0 z-10">
+                      <div className="p-2 bg-light-white rounded-4xl shadow-md">
+                        <ArrowLeft
+                          className="size-6"
+                          onClick={() => router.back()}
+                        />
+                      </div>
+                      <div className="flex gap-4 items-center">
+                        <div className="p-2 bg-light-white rounded-4xl shadow-md">
+                          <Sparkle className="size-6" />
+                        </div>
+                        <div className="p-2 bg-light-white rounded-4xl shadow-md">
+                          <Share className="size-6" />
+                        </div>
+                      </div>
+                    </header>
+                  ) : (
+                    <header className="w-full bg-light-white flex justify-between p-5 fixed top-0 z-10">
+                      <MoveLeft
+                        className="size-8"
+                        onClick={() => router.back()}
+                      />
+                      <span className="font-unbounded font-medium text-xl h-8 flex items-center">
+                        PESHKOM
+                      </span>
+                      <CircleUser className="size-8" />
+                    </header>
+                  )}
+                  <main
+                    className={`w-full ${
+                      pathname.includes("place/") ||
+                      pathname.includes("/map") ||
+                      pathname.includes("/auth")
+                        ? "mt-0"
+                        : "mt-20"
+                    }`}
+                  >
+                    {children}
+                  </main>
+                  {pathname.includes("/auth") ||
+                  pathname.includes("/map") ? null : (
+                    <nav
+                      className={`flex justify-between gap-4 items-center mb-5 p-5 w-11/12 max-w-screen fixed bottom-0 bg-white shadow-2xl rounded-3xl z-10 ${
+                        pathname.includes("place/") ? "hidden" : ""
+                      }`}
+                    >
+                      <Link href="/posts">
+                        <PanelTop className="size-8" />
+                      </Link>
+                      <Link href="/">
+                        <MessageCircleHeart className="size-8" />
+                      </Link>
+                      <Link href="/">
+                        <Footprints className="size-8" />
+                      </Link>
+                      <Link href="/">
+                        <Focus className="size-8" />
+                      </Link>
+                      <Link href="/">
+                        <CircleUser className="size-8" />
+                      </Link>
+                    </nav>
+                  )}
+                </div>
+              </AuthCheck>
+            </AuthProvider>
+          </YMaps>
         </body>
       </html>
     </>

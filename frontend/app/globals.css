@@ -138,3 +138,8 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+
+[class*="copyrights-pane"] {
+  display: none !important;
+}
