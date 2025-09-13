@@ -76,7 +76,6 @@ export default function MapPage() {
         <ArrowLeft className="size-8" />
       </div>
       <div className="fixed top-8 right-5 z-10 shadow-md p-3 bg-light-white rounded-2xl flex flex-col gap-4">
-        <ArrowLeft className="size-8" />
         <Route className="size-8" />
         <Dices className="size-8" />
       </div>

@@ -8,12 +8,12 @@ import {
   MoveLeft,
   ArrowLeft,
   CircleUser,
-  Footprints,
   PanelTop,
   MessageCircleHeart,
   Focus,
   Sparkle,
   Share,
+  Map,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -121,8 +121,8 @@ export default function RootLayout({
                         <Link href="/">
                           <MessageCircleHeart className="size-8" />
                         </Link>
-                        <Link href="/">
-                          <Footprints className="size-8" />
+                        <Link href="/map">
+                          <Map className="size-8" />
                         </Link>
                         <Link href="/">
                           <Focus className="size-8" />
