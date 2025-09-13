@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { generateToken } from '@/lib/jwt';
 import { setAuthCookie } from '@/lib/cookies';
 import connectDB from '@/lib/mongodb';
-import User from '@/models/User';
+import User from '@/models/user';
 
 export async function POST(request: Request) {
   try {

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
-import User from '@/models/User';
+import User from '@/models/user';
 import { comparePasswords } from '@/lib/bcrypt';
 import { generateToken } from '@/lib/jwt';
 import { setAuthCookie } from '@/lib/cookies';
