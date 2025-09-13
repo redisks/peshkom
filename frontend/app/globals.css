@@ -1,3 +1,4 @@
+/* @import '@yandex/ymaps3-default-ui-theme/dist/esm/index.css'; */
 @import "tailwindcss";
 
 @plugin "tailwindcss-animate";

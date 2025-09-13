@@ -1,6 +1,6 @@
 "use client";
 
-import { YMaps, Map, Placemark, useYMaps } from "@iminside/react-yandex-maps";
+import { Map, useYMaps } from "@iminside/react-yandex-maps";
 import { ArrowLeft, Route, Dices, Sparkle, Search } from "lucide-react";
 import {
   Drawer,
@@ -12,20 +12,21 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import GlobalSearch from "@/components/GlobalSearch";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import { YMapsApi } from "@iminside/react-yandex-maps/typings/util/typing";
-import { Map as IMap } from "@iminside/react-yandex-maps";
+import { YMapDefaultMarker } from "@yandex/ymaps3-default-ui-theme";
+import { IPlace } from "@/lib/types";
+import { PointsContext } from "@/context/PointsContext";
 
 interface ymapsWithRoute extends YMapsApi {
   route: Function;
 }
 
 export default function MapPage() {
-  const map = useRef<ymaps.Map>(undefined);
+  const mapRef = useRef<ymaps.Map>(undefined);
   const ymaps = useYMaps(["multiRouter.MultiRoute"]);
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const [points, setPoints] = useState<string[]>([]);
+  const { points } = useContext(PointsContext);
   const [drawerOpened, setDrawerOpened] = useState<boolean>(false);
 
   const defaultState = {
@@ -35,15 +36,15 @@ export default function MapPage() {
   };
 
   useEffect(() => {
-    setDrawerOpened(false);
-    setPoints(searchParams.get("route")?.split(";") ?? []);
-  }, [searchParams]);
+    loadRoute();
+  }, [points, ymaps]);
 
-  useEffect(() => {
+  function loadRoute() {
     if (ymaps && points.length > 0) {
+      setDrawerOpened(false);
       const multiRoute = new ymaps.multiRouter.MultiRoute(
         {
-          referencePoints: points,
+          referencePoints: points.map((point) => point.address),
           params: {
             routingMode: "pedestrian",
           },
@@ -53,11 +54,13 @@ export default function MapPage() {
           boundsAutoApply: true,
         }
       );
-      if (map.current) {
-        map.current.geoObjects.add(multiRoute);
+      if (mapRef.current) {
+        // TODO: marker
+        mapRef.current.geoObjects.removeAll();
+        mapRef.current.geoObjects.add(multiRoute);
       }
     }
-  }, [points, ymaps]);
+  }
 
   if (!ymaps) {
     // TODO: loading
@@ -100,24 +103,17 @@ export default function MapPage() {
           <GlobalSearch />
         </DrawerContent>
       </Drawer>
-      <YMaps
-        query={{
-          load: "package.full",
-          apikey: process.env.NEXT_PUBLIC_YANDEX_MAPS_API_KEY,
+
+      <Map
+        defaultState={defaultState}
+        defaultOptions={{
+          suppressMapOpenBlock: true,
         }}
-      >
-        <Map
-          defaultState={defaultState}
-          defaultOptions={{
-            suppressMapOpenBlock: true,
-          }}
-          className="w-full h-screen fixed top-0"
-          modules={["multiRouter.MultiRoute"]}
-          instanceRef={map}
-        >
-          <Placemark geometry={[55.684758, 37.738521]} />
-        </Map>
-      </YMaps>
+        className="w-full h-screen fixed top-0"
+        modules={["multiRouter.MultiRoute"]}
+        instanceRef={mapRef}
+        onLoad={loadRoute}
+      />
     </>
   );
 }

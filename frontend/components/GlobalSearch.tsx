@@ -1,23 +1,23 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Search, Frown, CableCar } from "lucide-react";
+import { Search, Frown, Footprints } from "lucide-react";
 import { places } from "@/data/places";
 import { IPlace } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
-import { useSearchParams } from 'next/navigation';
+import { Button } from "@/components/ui/button";
+import { useContext } from "react";
+import { PointsContext } from "@/context/PointsContext";
 
 export default function GlobalSearch() {
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState<IPlace[]>([]);
-  const [selectedAddresses, setSelectedAddresses] = useState<string[]>([]);
+  const [selectedAddresses, setSelectedAddresses] = useState<IPlace[]>([]);
 
-  const searchParams = useSearchParams();
-
-  const selectedQueryTitles = useMemo(() => searchParams.get("route")?.split('/') ?? [], [searchParams])
+  const { points, setPoints } = useContext(PointsContext);
 
   useEffect(() => {
     setResults(
@@ -29,6 +29,12 @@ export default function GlobalSearch() {
       )
     );
   }, [searchQuery]);
+
+  useEffect(() => {
+    if (points.length > 0 && selectedAddresses.length === 0) {
+      setSelectedAddresses(points);
+    }
+  }, []);
 
   return (
     <div className="flex items-center justify-start w-full h-full flex-col gap-4 relative">
@@ -58,13 +64,17 @@ export default function GlobalSearch() {
               className="flex gap-4 justify-between items-center w-full py-2 text-lg"
               key={place.id}
               onClick={() => {
-                if (selectedAddresses.includes(place.address)) {
+                if (
+                  selectedAddresses.map((place) => place.id).includes(place.id)
+                ) {
                   setSelectedAddresses((selectedAddresses) =>
-                    selectedAddresses.filter((title) => title !== place.address)
+                    selectedAddresses.filter(
+                      (placeAddress) => placeAddress.id !== place.id
+                    )
                   );
                 } else {
                   setSelectedAddresses((selectedAddresses) =>
-                    Array.from(new Set([...selectedAddresses, place.address]))
+                    Array.from(new Set([...selectedAddresses, place]))
                   );
                 }
               }}
@@ -88,7 +98,9 @@ export default function GlobalSearch() {
                 </div>
               </div>
               <Checkbox
-                checked={selectedAddresses.includes(place.address) || selectedQueryTitles.includes(place.address)}
+                checked={selectedAddresses
+                  .map((place) => place.id)
+                  .includes(place.id)}
                 className="size-7"
               />
             </div>
@@ -97,10 +109,15 @@ export default function GlobalSearch() {
         </div>
       )}
       {selectedAddresses.length > 0 ? (
-        <Link href={`/map?route=${selectedAddresses.join(';')}`} className="w-5/6 bg-pale-orange fixed bottom-5 py-5 rounded-3xl shadow-xl text-white flex justify-center items-center gap-4">
-          <span className="text-2xl font-medium">Поехали!</span>
-          <CableCar className='size-6' />
-        </Link>
+        <div className="w-full flex justify-center">
+          <Button
+            className="w-5/6 bg-pale-orange/80 backdrop-blur-sm fixed bottom-5 py-7 rounded-3xl shadow-xl text-white flex justify-center items-center gap-4"
+            onClick={() => setPoints(selectedAddresses)}
+          >
+            <span className="text-2xl font-medium">Поехали!</span>
+            <Footprints className="size-6" />
+          </Button>
+        </div>
       ) : (
         ""
       )}
