@@ -43,7 +43,6 @@ export default function GlobalSearch() {
           placeholder="Что хотите посетить?"
           className="flex-1 h-full shadow-md py-4 rounded-2xl"
           onChange={(evt) => setSearchQuery(evt.target.value.toLowerCase())}
-          autoFocus
         />
         <Search className="size-6 text-neutral-500 absolute right-4" />
       </header>
