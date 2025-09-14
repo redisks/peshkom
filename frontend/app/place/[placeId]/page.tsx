@@ -20,11 +20,11 @@ import { num_word } from '@/lib/utils';
 export default function Place() {
   const { placeId } = useParams();
   const placeIds = useMemo(
-    () => places.map((place) => String(place.id)),
+    () => places.map((place) => String(place._id)),
     [places]
   );
   const place = useMemo(
-    () => places.find((place) => String(place.id) === placeId),
+    () => places.find((place) => String(place._id) === placeId),
     [placeId]
   );
 
