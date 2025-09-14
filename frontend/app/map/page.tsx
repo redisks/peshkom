@@ -39,6 +39,7 @@ export default function MapPage() {
     useState<ymaps.multiRouter.MultiRoute | null>(null);
   const [play, setPlay] = useState(false);
   const [windowBlurred, setWindowBlurred] = useState(false);
+  const [routeLoading, setRouteLoading] = useState(false);
 
   const defaultState = {
     center: [55.768418, 37.588948],
@@ -84,11 +85,6 @@ export default function MapPage() {
 
     setCoords([newLatitude, newLongitude]);
 
-    console.log(
-      points.length,
-      Math.abs(latitude - newLatitude) > 0.0006 ||
-        Math.abs(longitude - newLongitude) > 0.0006
-    );
     if (
       !windowBlurred &&
       points.length > 0 &&
@@ -139,10 +135,15 @@ export default function MapPage() {
           boundsAutoApply: true,
         }
       );
+      
       if (mapRef.current) {
         mapRef.current.geoObjects.splice(1, 1);
         mapRef.current.geoObjects.add(multiRoute);
-        setCurrentRoute(multiRoute);
+        setRouteLoading(true);
+        multiRoute.events.add("update", () => {
+          setRouteLoading(false);
+          setCurrentRoute(multiRoute);
+        })
       }
     }
   }
@@ -174,8 +175,16 @@ export default function MapPage() {
         <Dices className="size-8" />
       </div>
       {points.length > 0 ? (
-        <div className="flex gap-4 justify-center items-center w-full fixed bottom-28 z-10">
-          <div
+        <div className="flex gap-4 flex-col justify-center items-center w-full fixed bottom-28 z-10">
+          {
+            routeLoading
+            ?
+            <div className="bg-white px-10 py-2 text-center rounded-xl animate-pulse text-sm shadow-lg">Строим маршрут...</div>
+            :
+            ''
+          }
+          <div className="w-full flex gap-4 justify-center items-center">
+            <div
             className="p-5 bg-light-white rounded-[50%] shadow-xl"
             onClick={() => loadRoute(coords)}
           >
@@ -199,6 +208,7 @@ export default function MapPage() {
             }}
           >
             <X className="size-8" />
+          </div>
           </div>
         </div>
       ) : (
