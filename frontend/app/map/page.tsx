@@ -10,7 +10,8 @@ import {
   Play,
   Pause,
   Repeat,
-  X
+  X,
+  LocateFixed,
 } from "lucide-react";
 import {
   Drawer,
@@ -32,15 +33,16 @@ export default function MapPage() {
   const { points, setPoints } = useContext(PointsContext);
   const [drawerOpened, setDrawerOpened] = useState<boolean>(false);
   const [coords, setCoords] = useState<[number, number]>([
-    55.751574, 37.573856,
+    55.768418, 37.588948,
   ]);
   const [currentRoute, setCurrentRoute] =
     useState<ymaps.multiRouter.MultiRoute | null>(null);
   const [play, setPlay] = useState(false);
+  const [windowBlurred, setWindowBlurred] = useState(false);
 
   const defaultState = {
-    center: [55.751574, 37.573856],
-    zoom: 10,
+    center: [55.768418, 37.588948],
+    zoom: 13,
     controls: [],
   };
 
@@ -56,20 +58,73 @@ export default function MapPage() {
     } else {
       // getPosition();
     }
-    loadRoute();
+    loadRoute(coords);
   }, [points, ymaps]);
 
-  function getPosition() {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setCoords([position.coords.latitude, position.coords.longitude]);
-      },
-      (err) => console.log(err),
-      options
-    );
-  }
+  // function getPosition() {
+  //   navigator.geolocation.getCurrentPosition(
+  //     (position) => {
+  //       setCoords([position.coords.latitude, position.coords.longitude]);
+  //     },
+  //     (err) => console.log(err),
+  //     options
+  //   );
+  // }
 
-  function loadRoute() {
+  const getPosition = () => {
+    const offset = 0.005;
+    const [latitude, longitude] = coords;
+
+    const newLatitude = parseFloat(
+      (latitude + (Math.random() * 2 - 1) * offset).toFixed(5)
+    );
+    const newLongitude = parseFloat(
+      (longitude + (Math.random() * 2 - 1) * offset).toFixed(5)
+    );
+
+    setCoords([newLatitude, newLongitude]);
+
+    console.log(
+      points.length,
+      Math.abs(latitude - newLatitude) > 0.0006 ||
+        Math.abs(longitude - newLongitude) > 0.0006
+    );
+    if (
+      !windowBlurred &&
+      points.length > 0 &&
+      (Math.abs(latitude - newLatitude) > 0.0006 ||
+        Math.abs(longitude - newLongitude) > 0.0006)
+    ) {
+      console.log("yes");
+      loadRoute([newLatitude, newLongitude]);
+    }
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      getPosition();
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [points]);
+
+  useEffect(() => {
+    const onBlur = () => {
+      setWindowBlurred(true);
+    };
+    const onFocus = () => {
+      setWindowBlurred(false);
+    };
+    window.addEventListener("blur", onBlur);
+    window.addEventListener("focus", onFocus);
+
+    return () => {
+      window.removeEventListener("blur", onBlur);
+      window.removeEventListener("focus", onFocus);
+    };
+  }, []);
+
+  function loadRoute(coords: [number, number]) {
     if (ymaps && points.length > 0) {
       setDrawerOpened(false);
       const multiRoute = new ymaps.multiRouter.MultiRoute(
@@ -113,17 +168,18 @@ export default function MapPage() {
       >
         <ArrowLeft className="size-8" />
       </div>
-      <div className="fixed top-8 right-5 z-10 shadow-md p-3 bg-light-white rounded-2xl flex flex-col gap-4">
+      <div className="fixed top-8 right-5 z-10 shadow-md p-3 bg-light-white rounded-2xl flex flex-col gap-6">
+        <LocateFixed className="size-8" onClick={getPosition} />
         <Route className="size-8" />
         <Dices className="size-8" />
       </div>
       {points.length > 0 ? (
-        <div className='flex gap-4 justify-center items-center w-full fixed bottom-28 z-10'>
+        <div className="flex gap-4 justify-center items-center w-full fixed bottom-28 z-10">
           <div
             className="p-5 bg-light-white rounded-[50%] shadow-xl"
-            onClick={loadRoute}
+            onClick={() => loadRoute(coords)}
           >
-            <Repeat className='size-8' onClick={loadRoute} />
+            <Repeat className="size-8" />
           </div>
           <div
             className="p-5 bg-light-white rounded-[50%] z-10 shadow-xl"
@@ -179,7 +235,7 @@ export default function MapPage() {
         className="w-full h-screen fixed top-0"
         modules={["multiRouter.MultiRoute"]}
         instanceRef={mapRef}
-        onLoad={loadRoute}
+        onLoad={() => loadRoute(coords)}
       >
         <Placemark
           geometry={coords}
