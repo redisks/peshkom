@@ -24,9 +24,6 @@ export default function AuthForm() {
   const [firstPasswordVisible, setFirstPasswordVisible] = useState(false);
   const [secondPasswordVisible, setSecondPasswordVisible] = useState(false);
   const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const redirect = searchParams.get("redirect");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,7 +53,7 @@ export default function AuthForm() {
       setMessage(result.message);
       
       if (result.success) {
-        router.push(redirect ?? '/');
+        router.push('/');
       }
     } catch (error) {
       setMessage("Произошла ошибка");

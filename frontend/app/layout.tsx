@@ -14,6 +14,8 @@ import {
   Sparkle,
   Share,
   Map,
+  Milestone,
+  Footprints,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -27,11 +29,6 @@ const unbounded = Unbounded({
   subsets: ["latin", "cyrillic"],
   display: "swap",
   variable: "--font-unbounded",
-});
-const inter = Inter({
-  subsets: ["latin", "cyrillic"],
-  display: "swap",
-  variable: "--font-inter",
 });
 
 export default function RootLayout({
@@ -49,9 +46,10 @@ export default function RootLayout({
       <html lang="en">
         <Head>
           <meta name="referrer" content="origin"></meta>
+          <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"></meta>
         </Head>
         <body
-          className={`${inter.variable} ${unbounded.variable} h-screen w-screen bg-background text-light-black overflow-x-hiddenT ${inter.className}`}
+          className={`${unbounded.variable} h-screen max-h-screen w-screen bg-background text-light-black overflow-x-hiddenT ${unbounded.className}`}
         >
           <Suspense fallback="error">
             <YMaps
@@ -65,7 +63,7 @@ export default function RootLayout({
               >
                 <AuthProvider>
                   <AuthCheck>
-                    <div className="flex justify-center w-full">
+                    <div className="flex justify-center w-full h-full">
                       {pathname.includes("/auth") ||
                       pathname.includes("/map") ? null : pathname.includes(
                           "place/"
@@ -104,7 +102,7 @@ export default function RootLayout({
                           pathname.includes("/map") ||
                           pathname.includes("/auth")
                             ? "mt-0"
-                            : "mt-20"
+                            : "mt-20 pb-20"
                         }`}
                       >
                         {children}
@@ -112,25 +110,28 @@ export default function RootLayout({
                       {pathname.includes("/auth") ||
                       pathname.includes("/map") ? null : (
                         <nav
-                          className={`flex justify-between gap-4 items-center mb-5 p-5 w-11/12 max-w-screen fixed bottom-0 bg-white shadow-2xl rounded-3xl z-10 ${
+                          className={`flex justify-between gap-4 items-center mb-5 h-20 w-11/12 max-w-screen fixed bottom-0 bg-white shadow-2xl rounded-3xl z-20 ${
                             pathname.includes("place/") ? "hidden" : ""
                           }`}
                         >
-                          <Link href="/posts">
-                            <PanelTop className="size-8" />
+                          <Link href="/posts" className={`flex justify-center items-center rounded-3xl flex-1 h-full ${pathname.includes('/post') ? 'bg-pale-orange text-white' : ''}`}>
+                            <PanelTop className="size-10" />
                           </Link>
-                          <Link href="/">
+                          <Link href="/" className={`flex justify-center items-center rounded-3xl flex-1 h-full ${pathname === "/" ? 'bg-pale-orange text-white' : ''}`}>
+                            <Footprints className="size-12" />
+                          </Link>
+                          <Link href="/map" className={`flex justify-center items-center rounded-3xl flex-1 h-full ${pathname === "/map" ? 'bg-pale-orange text-white' : ''}`}>
+                            <Map className="size-10" />
+                          </Link>
+                          {/* <Link href="/">
                             <MessageCircleHeart className="size-8" />
-                          </Link>
-                          <Link href="/map">
-                            <Map className="size-8" />
-                          </Link>
-                          <Link href="/">
+                          </Link> */}
+                          {/* <Link href="/">
                             <Focus className="size-8" />
-                          </Link>
-                          <Link href="/">
+                          </Link> */}
+                          {/* <Link href="/">
                             <CircleUser className="size-8" />
-                          </Link>
+                          </Link> */}
                         </nav>
                       )}
                     </div>

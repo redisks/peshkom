@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { useContext } from "react";
 import { PointsContext } from "@/context/PointsContext";
 
-export default function GlobalSearch() {
+export default function GlobalSearch({coords}: {coords: [number, number]}) {
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState<IPlace[]>([]);
   const [selectedAddresses, setSelectedAddresses] = useState<IPlace[]>([]);
@@ -27,6 +27,9 @@ export default function GlobalSearch() {
           place.address.toLowerCase().includes(searchQuery) ||
           place.tags.some((tag) => tag.toLowerCase().includes(searchQuery))
       )
+      .sort((a, b) => (
+        Math.abs(a.coordinates.lat - coords[0]) - Math.abs(b.coordinates.lat - coords[0]) || Math.abs(a.coordinates.lng - coords[1]) - Math.abs(b.coordinates.lng - coords[1])
+      ))
     );
   }, [searchQuery]);
 
@@ -61,14 +64,14 @@ export default function GlobalSearch() {
           {results.map((place: IPlace) => (
             <div
               className="flex gap-4 justify-between items-center w-full py-2 text-lg"
-              key={place.id}
+              key={place._id}
               onClick={() => {
                 if (
-                  selectedAddresses.map((place) => place.id).includes(place.id)
+                  selectedAddresses.map((place) => place._id).includes(place._id)
                 ) {
                   setSelectedAddresses((selectedAddresses) =>
                     selectedAddresses.filter(
-                      (placeAddress) => placeAddress.id !== place.id
+                      (placeAddress) => placeAddress._id !== place._id
                     )
                   );
                 } else {
@@ -85,7 +88,7 @@ export default function GlobalSearch() {
                 </Avatar>
                 <div className="flex flex-col">
                   <Link
-                    href={`/place/${place.id}`}
+                    href={`/place/${place._id}`}
                     className="font-bold"
                     onClick={(evt) => evt.stopPropagation()}
                   >
@@ -98,8 +101,8 @@ export default function GlobalSearch() {
               </div>
               <Checkbox
                 checked={selectedAddresses
-                  .map((place) => place.id)
-                  .includes(place.id)}
+                  .map((place) => place._id)
+                  .includes(place._id)}
                 className="size-7"
               />
             </div>

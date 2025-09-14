@@ -1,0 +1,16 @@
+.blob {
+  transition: .5s;;
+  background-image: url("../public/images/blob.svg");
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.blob[data-selected="true"] {
+  transition: .5s;;
+  filter: hue-rotate(0deg) saturate(2) brightness(1.1);
+}
+
+.blob:hover {
+  transition: .5s;;
+  filter: hue-rotate(0deg) saturate(2) brightness(1.1);
+}

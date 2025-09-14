@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/drawer";
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { num_word } from '@/lib/utils';
-import { Svyaz } from '@/data/localFonts';
 
 export default function Place() {
   const { placeId } = useParams();
@@ -36,7 +35,7 @@ export default function Place() {
     <div className="w-full h-full min-h-screen flex flex-col font-unbounded">
       <Image src={place.image} alt={place.name} className="w-full h-1/3" width={300} height={300} />
       <div className="w-full flex-1 bg-light-white border-pale-orange border-16 border-b-0 rounded-t-4xl flex flex-col gap-3 p-4 -mt-8">
-        <div className={`text-pale-orange text-5xl ${Svyaz.className}`}>{place.name}</div>
+        <div className="text-pale-orange text-2xl font-unbounded font-medium">{place.name}</div>
         <div className="w-full flex gap-1 items-center">
           <Star className="size-6 text-yellow-400 fill-yellow-400" />
           <span className="text-xl">{place.rating}</span>

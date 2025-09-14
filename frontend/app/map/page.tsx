@@ -234,7 +234,7 @@ export default function MapPage() {
           <DrawerHeader className="w-full flex items-stretch justify-between">
             <DrawerTitle className="sr-only">Поиск</DrawerTitle>
           </DrawerHeader>
-          <GlobalSearch />
+          <GlobalSearch coords={coords} />
         </DrawerContent>
       </Drawer>
       <Map

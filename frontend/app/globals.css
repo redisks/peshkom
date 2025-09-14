@@ -7,19 +7,21 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-inter: var(--font-inter);
   --font-unbounded: var(--font-unbounded);
   --color-light-white: var(--background);
   --color-light-black: var(--foreground);
-  --color-pale-orange: #F95331;
-  --color-vasile-blue: #7280ED;
-  --color-banana-cream: #F8EDAD;
-  --color-ideal-red: #CA1C1D;
-  --color-burnt-red: #ED7C30;
+  --color-pale-orange: #f95331;
+  --color-vasile-blue: #7280ed;
+  --color-banana-cream: #f8edad;
+  --color-ideal-red: #ca1c1d;
+  --color-burnt-red: #ed7c30;
 }
 
 body {
-  font-family: --font-inter;
+  font-family: --font-unbounded;
+  touch-action: pan-y;
+  scrollbar-gutter: stable;
+  overflow-x: hidden;
 }
 
 @theme inline {
@@ -93,8 +95,6 @@ body {
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-  scrollbar-gutter: stable;
-  overflow-x: hidden;
 }
 
 .dark {
@@ -139,7 +139,6 @@ body {
     @apply bg-background text-foreground;
   }
 }
-
 
 [class*="copyrights-pane"] {
   display: none !important;

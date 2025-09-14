@@ -1,4 +1,5 @@
 export interface IPost {
+  _id: string;
   date: string;
   title: string;
   text: string;
@@ -18,7 +19,7 @@ export interface IComment {
 }
 
 export interface IPlace {
-  id: number;
+  _id: string;
   name: string;
   coordinates: {
     lat: number;

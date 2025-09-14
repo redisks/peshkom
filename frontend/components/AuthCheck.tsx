@@ -3,7 +3,6 @@
 import { ReactNode, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter, usePathname } from "next/navigation";
-import { protectedRoutes } from "@/data/protectedRoutes";
 
 export default function AuthCheck({ children }: { children: ReactNode }) {
   const router = useRouter();
@@ -11,20 +10,16 @@ export default function AuthCheck({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
 
   useEffect(() => {
-    if (!user && !loading && protectedRoutes.includes(pathname)) {
-      router.push(`/auth?redirect=${pathname}`);
+    if (!user && !loading && pathname !== "/auth") {
+      router.push(`/auth`);
     }
   }, [user, loading]);
 
-  return protectedRoutes.includes(pathname) ? (
-    !loading && user ? (
-      children
-    ) : (
-      <div className="w-full h-full flex justify-center items-center">
-        loading
-      </div>
-    )
-  ) : (
+  return (!loading && user) || pathname === "/auth" ? (
     children
+  ) : (
+    <div className="w-full h-full flex justify-center items-center">
+      loading
+    </div>
   );
 }
