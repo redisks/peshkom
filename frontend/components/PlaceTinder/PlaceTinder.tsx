@@ -7,7 +7,7 @@ import { calculateDistance } from "@/lib/utils";
 import { IPlace } from "@/lib/types";
 import { useRouter } from "next/navigation";
 
-const PlaceTinder = ({initialPlaces}: {initialPlaces: IPlace[]}) => {
+const PlaceTinder = ({ initialPlaces }: { initialPlaces: IPlace[] }) => {
   const router = useRouter();
 
   const [isAnimating, setIsAnimating] = useState<
@@ -121,7 +121,8 @@ const PlaceTinder = ({initialPlaces}: {initialPlaces: IPlace[]}) => {
           {/* Кнопка "Не иду" */}
           <button
             onClick={() => handleSwipe("left")}
-            className="w-40 h-40 rounded-full bg-red-500 flex items-center justify-center shadow-lg hover:bg-red-600 transition-colors text-2xl font-medium absolute -bottom-10 -left-10 rounded-bl-2xl"
+            className="w-40 h-40 rounded-full bg-pale-orange/20 backdrop-blur-2xl flex items-center justify-center shadow-lg transition-colors text-2xl font-medium absolute -bottom-10 -left-10 rounded-bl-2xl"
+            style={{ boxShadow: "inset 5px 5px 10px white" }}
             aria-label="Не иду"
           >
             Не иду
@@ -130,7 +131,9 @@ const PlaceTinder = ({initialPlaces}: {initialPlaces: IPlace[]}) => {
           {/* Кнопка обновления */}
           <button
             onClick={handleRefresh}
-            className={`w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center shadow-lg hover:bg-gray-300 transition-colors mx-auto z-10 ${places.length === 1 ? 'opacity-0' : ''}`}
+            className={`w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center shadow-lg hover:bg-gray-300 transition-colors mx-auto z-10 ${
+              places.length === 1 ? "opacity-0" : ""
+            }`}
             aria-label="Обновить"
           >
             <Repeat className="size-6 text-light-black" />
@@ -139,7 +142,8 @@ const PlaceTinder = ({initialPlaces}: {initialPlaces: IPlace[]}) => {
           {/* Кнопка "Иду" */}
           <button
             onClick={() => handleSwipe("right")}
-            className="w-40 h-40 rounded-full bg-green-500 flex items-center justify-center shadow-lg hover:bg-green-600 transition-colors text-3xl font-medium absolute -bottom-10 -right-10 rounded-br-2xl"
+            className="w-40 h-40 rounded-full bg-pale-orange/20 backdrop-blur-2xl flex items-center justify-center shadow-lg transition-colors text-2xl font-medium absolute -bottom-10 -right-10 rounded-br-2xl"
+            style={{ boxShadow: "inset 5px 5px 10px white" }}
             aria-label="Иду"
           >
             Иду

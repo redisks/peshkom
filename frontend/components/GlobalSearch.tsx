@@ -69,6 +69,10 @@ export default function GlobalSearch({ coords }: { coords: [number, number] }) {
     if (points.length > 0 && selectedAddresses.length === 0) {
       setSelectedAddresses(points);
     }
+    const route = searchParams.get("route");
+    if (route && route.split(';').length > 0 && selectedAddresses.length === 0) {
+      setSelectedAddresses(route.split(';').map((id) => places.find(pl => pl._id === id)).filter(pl => pl !== undefined));
+    }
   }, []);
 
   return (
