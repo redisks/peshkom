@@ -25,6 +25,10 @@ import { Input } from "@/components/ui/input";
 import GlobalSearch from "@/components/GlobalSearch";
 import { useEffect, useState, useRef, useContext } from "react";
 import { PointsContext } from "@/context/PointsContext";
+import { useSearchParams } from "next/navigation";
+import { IPlace } from "@/lib/types";
+import { places } from "@/data/places";
+import Navigator from "@/components/Navigator";
 
 export default function MapPage() {
   const mapRef = useRef<ymaps.Map>(undefined);
@@ -32,6 +36,7 @@ export default function MapPage() {
   const router = useRouter();
   const { points, setPoints } = useContext(PointsContext);
   const [drawerOpened, setDrawerOpened] = useState<boolean>(false);
+  const [routeDrawerOpened, setRouteDrawerOpened] = useState<boolean>(false);
   const [coords, setCoords] = useState<[number, number]>([
     55.768418, 37.588948,
   ]);
@@ -40,6 +45,9 @@ export default function MapPage() {
   const [play, setPlay] = useState(false);
   const [windowBlurred, setWindowBlurred] = useState(false);
   const [routeLoading, setRouteLoading] = useState(false);
+  const [routeLoaded, setRouteLoaded] = useState(false);
+
+  const searchParams = useSearchParams();
 
   const defaultState = {
     center: [55.768418, 37.588948],
@@ -54,46 +62,39 @@ export default function MapPage() {
   };
 
   useEffect(() => {
+    if (searchParams.get("route")) {
+      setDrawerOpened(true);
+    }
+  }, []);
+
+  useEffect(() => {
     if (!("geolocation" in navigator)) {
       console.log("Геолокация не поддерживется на данном устройстве");
     } else {
       // getPosition();
     }
-    loadRoute(coords);
+    loadRoute(coords, points);
   }, [points, ymaps]);
 
-  // function getPosition() {
-  //   navigator.geolocation.getCurrentPosition(
-  //     (position) => {
-  //       setCoords([position.coords.latitude, position.coords.longitude]);
-  //     },
-  //     (err) => console.log(err),
-  //     options
-  //   );
-  // }
-
   const getPosition = () => {
-    const offset = 0.005;
-    const [latitude, longitude] = coords;
-
-    const newLatitude = parseFloat(
-      (latitude + (Math.random() * 2 - 1) * offset).toFixed(5)
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        if (
+          !windowBlurred &&
+          points.length > 0 &&
+          (Math.abs(coords[0] - position.coords.latitude) > 0.0006 ||
+            Math.abs(coords[1] - position.coords.longitude) > 0.0006)
+        ) {
+          loadRoute(
+            [position.coords.latitude, position.coords.longitude],
+            points
+          );
+        }
+        setCoords([position.coords.latitude, position.coords.longitude]);
+      },
+      (err) => console.log(err),
+      options
     );
-    const newLongitude = parseFloat(
-      (longitude + (Math.random() * 2 - 1) * offset).toFixed(5)
-    );
-
-    setCoords([newLatitude, newLongitude]);
-
-    if (
-      !windowBlurred &&
-      points.length > 0 &&
-      (Math.abs(latitude - newLatitude) > 0.0006 ||
-        Math.abs(longitude - newLongitude) > 0.0006)
-    ) {
-      console.log("yes");
-      loadRoute([newLatitude, newLongitude]);
-    }
   };
 
   useEffect(() => {
@@ -120,12 +121,13 @@ export default function MapPage() {
     };
   }, []);
 
-  function loadRoute(coords: [number, number]) {
+  function loadRoute(coords: [number, number], points: IPlace[]) {
     if (ymaps && points.length > 0) {
       setDrawerOpened(false);
+      setRouteLoaded(true);
       const multiRoute = new ymaps.multiRouter.MultiRoute(
         {
-          referencePoints: [coords, ...points.map((point) => point.address)],
+          referencePoints: [coords, ...points.map((point) => [point.coordinates.lat, point.coordinates.lng])],
           params: {
             routingMode: "pedestrian",
           },
@@ -135,17 +137,28 @@ export default function MapPage() {
           boundsAutoApply: true,
         }
       );
-      
+
       if (mapRef.current) {
         mapRef.current.geoObjects.splice(1, 1);
         mapRef.current.geoObjects.add(multiRoute);
         setRouteLoading(true);
         multiRoute.events.add("update", () => {
-          setRouteLoading(false);
           setCurrentRoute(multiRoute);
-        })
+          setRouteLoaded(true);
+          setRouteLoading(false);
+        });
       }
     }
+  }
+
+  function exitRoute() {
+    setPlay(false);
+    if (currentRoute) {
+      mapRef.current?.geoObjects.remove(currentRoute);
+    }
+    setCurrentRoute(null);
+    setRouteLoaded(false);
+    setPoints([]);
   }
 
   useEffect(() => {
@@ -170,73 +183,72 @@ export default function MapPage() {
         <ArrowLeft className="size-8" />
       </div>
       <div className="fixed top-8 right-5 z-10 shadow-md p-3 bg-light-white rounded-2xl flex flex-col gap-6">
-        <LocateFixed className="size-8" onClick={getPosition} />
-        <Route className="size-8" />
+        <Route
+          className="size-8"
+          onClick={() => {
+            const route = searchParams.get("route");
+            if (route) {
+              setPoints(
+                route
+                  .split(";")
+                  .map((id) => places.find((place) => place._id === id))
+                  .filter((place) => place !== undefined)
+              );
+            }
+          }}
+        />
         <Dices className="size-8" />
       </div>
       {points.length > 0 ? (
         <div className="flex gap-4 flex-col justify-center items-center w-full fixed bottom-28 z-10">
-          {
-            routeLoading
-            ?
-            <div className="bg-white px-10 py-2 text-center rounded-xl animate-pulse text-sm shadow-lg">Строим маршрут...</div>
-            :
-            ''
-          }
-          <div className="w-full flex gap-4 justify-center items-center">
-            <div
-            className="p-5 bg-light-white rounded-[50%] shadow-xl"
-            onClick={() => loadRoute(coords)}
-          >
-            <Repeat className="size-8" />
-          </div>
-          <div
-            className="p-5 bg-light-white rounded-[50%] z-10 shadow-xl"
-            onClick={() => setPlay((play) => !play)}
-          >
-            {play ? <Pause className="size-8" /> : <Play className="size-8" />}
-          </div>
-          <div
-            className="p-5 bg-light-white rounded-[50%] shadow-xl"
-            onClick={() => {
-              setPlay(false);
-              if (currentRoute) {
-                mapRef.current?.geoObjects.remove(currentRoute);
-              }
-              setCurrentRoute(null);
-              setPoints([]);
-            }}
-          >
-            <X className="size-8" />
-          </div>
-          </div>
+          {routeLoading ? (
+            <div className="bg-white px-10 py-2 text-center rounded-xl animate-pulse text-sm shadow-lg">
+              Строим маршрут...
+            </div>
+          ) : (
+            ""
+          )}
         </div>
       ) : (
         ""
       )}
-      <Drawer
-        open={drawerOpened}
-        onOpenChange={(open) => setDrawerOpened(open)}
-      >
-        <DrawerTrigger className="fixed bottom-0 z-10 bg-light-white w-full p-5 flex items-stretch justify-between gap-4 rounded-t-3xl shadow-xl">
-          <div className="flex flex-1 items-center relative">
-            <Input
-              placeholder="Что хотите посетить?"
-              className="flex-1 h-full shadow-md py-4 rounded-2xl"
-            />
-            <Search className="size-6 text-neutral-500 absolute right-4" />
-          </div>
-          <div className="p-3 bg-light-white shadow-md rounded-2xl">
-            <Sparkle className="size-8" />
-          </div>
-        </DrawerTrigger>
-        <DrawerContent className="h-[95%]">
-          <DrawerHeader className="w-full flex items-stretch justify-between">
-            <DrawerTitle className="sr-only">Поиск</DrawerTitle>
-          </DrawerHeader>
-          <GlobalSearch coords={coords} />
-        </DrawerContent>
-      </Drawer>
+
+      {routeLoaded ? (
+        <div className="fixed bottom-0 z-10 bg-light-white w-full p-5 flex items-stretch justify-between gap-4 rounded-t-3xl shadow-xl">
+          <Navigator
+            mapRef={mapRef}
+            coords={coords}
+            exitRoute={exitRoute}
+            loadRoute={loadRoute}
+            getPosition={getPosition}
+          />
+        </div>
+      ) : (
+        <Drawer
+          open={drawerOpened}
+          onOpenChange={(open) => setDrawerOpened(open)}
+        >
+          <DrawerTrigger className="fixed bottom-0 z-10 bg-light-white w-full p-5 flex items-stretch justify-between gap-4 rounded-t-3xl shadow-xl">
+            <div className="flex flex-1 items-center relative">
+              <Input
+                placeholder="Что хотите посетить?"
+                className="flex-1 h-full shadow-md py-4 rounded-2xl"
+              />
+              <Search className="size-6 text-neutral-500 absolute right-4" />
+            </div>
+            <div className="p-3 bg-light-white shadow-md rounded-2xl">
+              <Sparkle className="size-8" />
+            </div>
+          </DrawerTrigger>
+          <DrawerContent className="h-[95%]">
+            <DrawerHeader className="w-full flex items-stretch justify-between">
+              <DrawerTitle className="sr-only">Поиск</DrawerTitle>
+            </DrawerHeader>
+            <GlobalSearch coords={coords} />
+          </DrawerContent>
+        </Drawer>
+      )}
+
       <Map
         defaultState={defaultState}
         defaultOptions={{
@@ -245,7 +257,7 @@ export default function MapPage() {
         className="w-full h-screen fixed top-0"
         modules={["multiRouter.MultiRoute"]}
         instanceRef={mapRef}
-        onLoad={() => loadRoute(coords)}
+        onLoad={() => loadRoute(coords, points)}
       >
         <Placemark
           geometry={coords}

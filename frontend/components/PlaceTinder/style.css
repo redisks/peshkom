@@ -1,0 +1,64 @@
+@keyframes goRight {
+  0% {
+    right: 0%;
+    opacity: 1;
+  }
+  50% {
+    right: -150%;
+    opacity: 0.25;
+  }
+  100% {
+    right: -200%;
+    opacity: 0;
+  }
+}
+
+@keyframes goLeft {
+  0% {
+    left: 0%;
+    opacity: 1;
+  }
+  50% {
+    left: -150%;
+    opacity: 0.25;
+  }
+  100% {
+    left: -200%;
+    opacity: 0;
+  }
+}
+
+@keyframes goBottom {
+  0% {
+    bottom: 0%;
+    opacity: 1;
+  }
+  50% {
+    bottom: -150%;
+    opacity: 0.25;
+  }
+  100% {
+    bottom: -200%;
+    opacity: 0;
+  }
+}
+
+.card-right {
+  animation: goRight 0.5s ease-in 1;
+}
+
+.card-left {
+  animation: goLeft 0.5s ease-in 1;
+}
+
+.card-refresh {
+  animation: goBottom 0.5s ease-in 1;
+}
+
+.card-end-right {
+  animation: goRight 0.5s ease-in 1 forwards;
+}
+
+.card-end-left {
+  animation: goLeft 0.5s ease-in 1 forwards;
+}

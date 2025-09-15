@@ -7,6 +7,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
+  --font-inter: var(--font-inter);
   --font-unbounded: var(--font-unbounded);
   --color-light-white: var(--background);
   --color-light-black: var(--foreground);

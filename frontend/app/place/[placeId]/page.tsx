@@ -87,7 +87,7 @@ export default function Place() {
             </Badge>
           ))}
         </div>
-        <div className="text-base font-light py-2">{place.description}</div>
+        <div className="text-lg py-2 font-inter">{place.description}</div>
         <div className="text-sm font-light flex gap-2">
           <MapPin className="size-6 text-pale-orange" />
           <span className="text-pale-orange">{place.address}</span>

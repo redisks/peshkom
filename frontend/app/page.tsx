@@ -1,25 +1,29 @@
 "use client";
 
 import "./blob.css";
-import { categories } from "@/data/categories";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { GirloSP } from "@/data/localFonts";
-import PlaceTinder from '@/components/PlaceTinder';
+import PlaceTinder from "@/components/PlaceTinder/PlaceTinder";
+import { places } from "@/data/places";
 
 export default function Home() {
   const [step, setStep] = useState(0);
   const [presentedCategories, setPresentedCategories] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
-  useEffect(() => {
-    console.log(selectedCategories);
-  }, [selectedCategories]);
+  const categories: string[] = useMemo(() => {
+    const categs: string[] = [];
+    places.forEach((place) => {
+      categs.push(...place.tags);
+    });
+    return Array.from(new Set(categs));
+  }, [places]);
 
   useEffect(() => {
     setPresentedCategories(
-      categories.sort((a, b) => 0.5 - Math.random()).slice(0, 8)
+      categories.sort((a, b) => 0.5 - Math.random()).slice(0, 6)
     );
   }, []);
 
@@ -51,10 +55,10 @@ export default function Home() {
             >
               Куда идем?
             </header>
-            <section className="grid grid-cols-12 grid-rows-8 font-bold text-xl text-light-white [&>*]:flex [&>*]:justify-center [&>*]:items-center [&>*]:aspect-square [&>*]:text-center [&>*]:cursor-pointer gap-3">
+            <section className="grid grid-cols-12 grid-rows-6 font-bold text-xl text-light-white [&>*]:flex [&>*]:justify-center [&>*]:items-center [&>*]:aspect-square [&>*]:text-center [&>*]:cursor-pointer gap-3">
               {presentedCategories.map((category, index) => (
                 <div
-                  className="blob col-span-6 row-span-2"
+                  className="blob col-span-6 row-span-2 break-all p-5"
                   data-selected={
                     selectedCategories.includes(category) ? "true" : "false"
                   }
@@ -91,7 +95,11 @@ export default function Home() {
               <ChevronRight className="size-6" />
             </div>
           </header>
-          <PlaceTinder />
+          <PlaceTinder
+            initialPlaces={places.filter((place) =>
+              place.tags.some((tag) => selectedCategories.includes(tag))
+            )}
+          />
         </>
       ) : (
         ""

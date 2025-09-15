@@ -9,12 +9,9 @@ import {
   ArrowLeft,
   CircleUser,
   PanelTop,
-  MessageCircleHeart,
-  Focus,
   Sparkle,
   Share,
   Map,
-  Milestone,
   Footprints,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
@@ -29,6 +26,12 @@ const unbounded = Unbounded({
   subsets: ["latin", "cyrillic"],
   display: "swap",
   variable: "--font-unbounded",
+});
+
+const inter = Inter({
+  subsets: ["latin", "cyrillic"],
+  display: "swap",
+  variable: "--font-inter",
 });
 
 export default function RootLayout({
@@ -49,9 +52,9 @@ export default function RootLayout({
           <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"></meta>
         </Head>
         <body
-          className={`${unbounded.variable} h-screen max-h-screen w-screen bg-background text-light-black overflow-x-hiddenT ${unbounded.className}`}
+          className={`${unbounded.variable} ${inter.variable} h-screen max-h-screen w-screen bg-background text-light-black overflow-x-hiddenT ${unbounded.className}`}
         >
-          <Suspense fallback="error">
+          <Suspense fallback="">
             <YMaps
               query={{
                 load: "package.full",
