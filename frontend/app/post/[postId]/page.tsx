@@ -1,22 +1,24 @@
 "use client";
 
 import { IPost } from "@/lib/types";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import Image from "next/image";
 import { posts } from "@/data/posts";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Heart } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default function Post() {
   const { postId } = useParams();
+  const router = useRouter();
 
   const [post, setPost] = useState<IPost | undefined>(
     posts.find((post) => post._id === postId)
   );
 
   return post ? (
-    <div className="max-w-3xl mx-auto p-5 bg-light-white">
+    <div className="max-w-3xl mx-auto p-5 bg-light-white pb-24">
       {/* Шапка поста */}
       <div className="flex items-center mb-6">
         <Avatar className="size-12">
@@ -51,6 +53,20 @@ export default function Post() {
       <div className="flex items-center text-gray-500 text-lg mb-6">
         <Heart className="mr-2 size-6" />
         <span>{post.likes} лайков</span>
+      </div>
+
+      <div className="flex flex-col gap-2 border-t py-4">
+        <h3 className='font-semibold'>Маршрут</h3>
+        <ul className='py-2'>
+          {
+            post.route.places.map((point, index) => (
+              <li key={index}>{index + 1}. {point.name}</li>
+            ))
+          }
+        </ul>
+        <Button style={{ background: "radial-gradient(#FD4B27 33%, #FE9F5D 75%)" }} onClick={() => router.push(`/map?route=${post.route.places.map(p => p._id).join(';')}`)}>
+          Открыть маршрут
+        </Button>
       </div>
 
       {/* Комментарии */}

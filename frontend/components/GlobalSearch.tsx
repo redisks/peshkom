@@ -13,6 +13,7 @@ import { useContext } from "react";
 import { PointsContext } from "@/context/PointsContext";
 import { useSearchParams } from "next/navigation";
 import { Switch } from "@/components/ui/switch";
+import { calculateDistance } from '@/lib/utils';
 
 export default function GlobalSearch({ coords }: { coords: [number, number] }) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -105,13 +106,13 @@ export default function GlobalSearch({ coords }: { coords: [number, number] }) {
           <Frown className="size-8" />
         </div>
       ) : (
-        <div className="w-11/12 px-3 flex flex-col justify-start overflow-y-scroll gap-4 flex-1 max-h-4/5" style={{
+        <div className="w-11/12 px-3 flex flex-col justify-start overflow-y-scroll gap-6 flex-1 max-h-4/5" style={{
           scrollbarGutter: 'stable'
         }}>
           {searchParams.get("route") ? (
             <div
               className="px-10 py-2 border-1 border-light-black rounded-xl flex justify-between items-center"
-              onClick={(evt) => setIsSelected((isSelected) => !isSelected)}
+              onClick={() => setIsSelected((isSelected) => !isSelected)}
             >
               <span className="flex-1 text-start">Все</span>
               <Switch checked={isSelected} />
@@ -122,7 +123,7 @@ export default function GlobalSearch({ coords }: { coords: [number, number] }) {
           )}
           {results.map((place: IPlace) => (
             <div
-              className="flex gap-4 justify-between items-center w-full py-2 text-lg"
+              className="flex gap-4 justify-between items-start w-full py-2 text-lg shadow-md rounded-xl p-5"
               key={place._id}
               onClick={() => {
                 if (
@@ -142,7 +143,7 @@ export default function GlobalSearch({ coords }: { coords: [number, number] }) {
                 }
               }}
             >
-              <div className="flex gap-3 items-stretch">
+              <div className="flex gap-4 items-stretch">
                 <Avatar className="size-14">
                   <AvatarImage src={place.image} />
                   <AvatarFallback>{place.name[0]}</AvatarFallback>
@@ -150,13 +151,13 @@ export default function GlobalSearch({ coords }: { coords: [number, number] }) {
                 <div className="flex flex-col">
                   <Link
                     href={`/place/${place._id}`}
-                    className="font-bold"
+                    className="font-medium"
                     onClick={(evt) => evt.stopPropagation()}
                   >
                     {place.name}
                   </Link>
                   <span className="text-sm text-neutral-400">
-                    {place.address}
+                    {calculateDistance(coords[0], coords[1], place.coordinates.lat, place.coordinates.lng).toFixed(1)} км
                   </span>
                 </div>
               </div>

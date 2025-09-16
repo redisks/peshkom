@@ -11,6 +11,9 @@ export interface IPost {
     name: string;
     email: string;
   };
+  route: {
+    places: IPlace[];
+  }
 }
 
 export interface IComment {

@@ -2,7 +2,13 @@
 
 import "./style.css";
 import { useEffect, useMemo, useState, Dispatch, SetStateAction } from "react";
-import { MapPin, FlagTriangleLeft, Repeat, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  MapPin,
+  FlagTriangleLeft,
+  Repeat,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { calculateDistance } from "@/lib/utils";
 import { IPlace } from "@/lib/types";
 import { useRouter } from "next/navigation";
@@ -101,7 +107,7 @@ const PlaceTinder = ({
   }, [coords]);
 
   return (
-    <div className="flex flex-col h-full mb-14">
+    <div className="w-full flex flex-col h-full mb-14">
       <header className="flex justify-between items-center w-full gap-12 text-lg px-5">
         <div
           className="flex gap-2 items-center cursor-pointer"
@@ -123,32 +129,30 @@ const PlaceTinder = ({
           <ChevronRight className="size-6" />
         </div>
       </header>
-      <div className="relative flex-1 m-4 rounded-2xl overflow-hidden shadow-xl">
+      <div className="relative w-11/12 flex-1 m-4 rounded-2xl overflow-hidden shadow-xl">
         <div
           className={`card-${
             places.length === 1 ? "end-" : "" + isAnimating
-          } relative z-10 flex flex-col justify-end h-full p-6 text-white bg-cover`}
+          } relative z-10 flex flex-col justify-end w-full h-full p-6 text-light-white max-w-screen bg-cover`}
           style={{
             backgroundImage: `linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 1)), url(${currentPlace?.image})`,
           }}
         >
-                                  <button
-              onClick={handleRefresh}
-              className={`p-3 rounded-full bg-gray-200 flex items-center justify-center shadow-lg hover:bg-gray-300 transition-colors mx-auto z-10 absolute top-5 ${
-                places.length === 1 ? "opacity-0" : ""
-              }`}
-              aria-label="Обновить"
-            >
-              <Repeat className="size-6 text-light-black" />
-            </button>
+          <button
+            onClick={handleRefresh}
+            className={`p-3 rounded-full bg-gray-200 flex items-center justify-center shadow-lg hover:bg-gray-300 transition-colors mx-auto z-10 absolute top-5 right-5 ${
+              places.length === 1 ? "opacity-0" : ""
+            }`}
+            aria-label="Обновить"
+          >
+            <Repeat className="size-6 text-light-black" />
+          </button>
           <div className="mb-2">
-            <h2 className="text-2xl font-bold mb-2">{currentPlace?.name}</h2>
+            <h2 className="text-2xl w-full font-bold mb-2">
+              {currentPlace?.name}
+            </h2>
           </div>
           <div className="flex flex-col gap-2 text-base mb-24">
-            <div className="flex items-center gap-2">
-              <MapPin className="size-8" />
-              <p>{currentPlace?.address}</p>
-            </div>
             <div className="flex items-center gap-2">
               <FlagTriangleLeft className="size-8" />
               <p>{distance} км от меня</p>
@@ -178,6 +182,10 @@ const PlaceTinder = ({
         {isAnimating && (
           <div className="absolute inset-0 bg-white/20 animate-pulse" />
         )}
+      </div>
+      <div className="w-full text-center flex justify-between items-center px-5">
+        <span>Выбрано: {yesPlaces.length}</span>{" "}
+        <span>Осталось: {places.length}</span>
       </div>
     </div>
   );

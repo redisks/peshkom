@@ -110,6 +110,7 @@ export default function MapPage() {
   };
 
   useEffect(() => {
+    getPosition(true);
     const interval = setInterval(() => {
       getPosition(false);
     }, 10000);
@@ -118,7 +119,6 @@ export default function MapPage() {
   }, [points]);
 
   useEffect(() => {
-    getPosition(false);
     const onBlur = () => {
       setWindowBlurred(true);
     };
@@ -203,25 +203,25 @@ export default function MapPage() {
         className="fixed top-8 left-5 z-10 shadow-md p-3 bg-light-white rounded-2xl"
         onClick={() => router.back()}
       >
-        <ArrowLeft className="size-8" />
+        <ArrowLeft className="size-7" />
       </div>
       <div className="fixed top-8 right-5 z-10 shadow-md p-3 bg-light-white rounded-2xl flex flex-col gap-6">
-        <LocateFixed onClick={() => getPosition(true)} />
+        <LocateFixed className='size-7' onClick={() => getPosition(true)} />
       </div>
       {points.length > 0 ? (
         <div
-          className="fixed top-24 right-5 z-10 shadow-md p-3 bg-light-white rounded-2xl flex flex-col gap-6"
+          className="fixed top-28 right-5 z-10 shadow-md p-3 bg-light-white rounded-2xl flex flex-col gap-6"
           onClick={() => setOnFeet((onFeet) => !onFeet)}
         >
-          {onFeet ? <Bus /> : <Footprints />}
+          {onFeet ? <Bus className='size-7' /> : <Footprints className='size-7' />}
         </div>
       ) : (
         ""
       )}
       {points.length > 0 ? (
-        <div className="flex gap-4 flex-col justify-center items-center w-full fixed bottom-28 z-10">
+        <div className="flex gap-4 flex-col justify-center items-center w-full fixed top-8 z-40">
           {routeLoading ? (
-            <div className="bg-white px-10 py-2 text-center rounded-xl animate-pulse text-sm shadow-lg">
+            <div className="bg-white px-10 py-3 text-center rounded-xl animate-pulse text-sm shadow-lg">
               Строим маршрут...
             </div>
           ) : (
