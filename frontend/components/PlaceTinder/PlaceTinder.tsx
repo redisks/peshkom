@@ -102,7 +102,7 @@ const PlaceTinder = ({
 
   return (
     <div className="flex flex-col h-11/12">
-      <header className="flex justify-between items-center w-full gap-12 text-lg">
+      <header className="flex justify-between items-center w-full gap-12 text-lg px-5">
         <div
           className="flex gap-2 items-center cursor-pointer"
           onClick={() => setStep(0)}
