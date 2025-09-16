@@ -148,7 +148,7 @@ const PlaceTinder = ({
             <Repeat className="size-6 text-light-black" />
           </button>
           <div className="mb-2">
-            <h2 className="text-2xl w-full font-bold mb-2">
+            <h2 className="text-2xl w-full font-bold mb-2 max-h-5/6">
               {currentPlace?.name}
             </h2>
           </div>

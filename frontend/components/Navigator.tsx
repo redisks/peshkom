@@ -3,7 +3,6 @@ import React, { useContext, useState, useRef } from "react";
 import {
   ChevronUp,
   ChevronDown,
-  Footprints,
   X,
   Repeat,
   LocateFixed,
@@ -39,7 +38,6 @@ const Navigator = ({
   const { points: finalPoints, setPoints: setFinalPoints } =
     useContext(PointsContext);
   const [open, setOpen] = useState(false);
-
   const [points, setPoints] = useState(finalPoints);
 
   // Переместить элемент вверх
@@ -152,28 +150,6 @@ const Navigator = ({
                     onDragEnd={handleSort}
                     onDragOver={(e) => e.preventDefault()}
                   >
-                    {/* Левая стрелка - вверх */}
-                    {/* <div className="flex flex-col gap-1">
-                      <button
-                        onClick={() => moveUp(index)}
-                        disabled={index === 0}
-                        className="p-2 rounded-full hover:bg-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                        title="Вверх"
-                      >
-                        <ChevronUp size={24} />
-                      </button>
-
-                      <button
-                        onClick={() => moveDown(index)}
-                        disabled={index === points.length - 1}
-                        className="p-2 rounded-full hover:bg-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                        title="Вниз"
-                      >
-                        <ChevronDown size={24} />
-                      </button>
-                    </div> */}
-
-                    {/* Номер и название */}
                     <div className="flex-1 flex flex-wrap items-center gap-3">
                       <div className="font-bold text-gray-500 min-w-[30px] h-[30px] flex items-center justify-center bg-white rounded-full">
                         {index + 1}

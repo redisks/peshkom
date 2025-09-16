@@ -1,7 +1,7 @@
 "use client";
 
 import { Map, useYMaps, Placemark } from "@iminside/react-yandex-maps";
-import { ArrowLeft, Bus, Footprints, Search, LocateFixed } from "lucide-react";
+import { ArrowLeft, Bus, Footprints, Search, LocateFixed, House } from "lucide-react";
 import {
   Drawer,
   DrawerContent,
@@ -203,7 +203,7 @@ export default function MapPage() {
         className="fixed top-8 left-5 z-10 shadow-md p-3 bg-light-white rounded-2xl"
         onClick={() => router.back()}
       >
-        <ArrowLeft className="size-7" />
+        <House className="size-7" />
       </div>
       <div className="fixed top-8 right-5 z-10 shadow-md p-3 bg-light-white rounded-2xl flex flex-col gap-6">
         <LocateFixed className='size-7' onClick={() => getPosition(true)} />
