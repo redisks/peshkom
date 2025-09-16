@@ -1,14 +1,7 @@
 "use client";
 
 import { Map, useYMaps, Placemark } from "@iminside/react-yandex-maps";
-import {
-  ArrowLeft,
-  Route,
-  Dices,
-  Sparkle,
-  Search,
-  LocateFixed,
-} from "lucide-react";
+import { ArrowLeft, Bus, Footprints, Search, LocateFixed } from "lucide-react";
 import {
   Drawer,
   DrawerContent,
@@ -37,6 +30,7 @@ export default function MapPage() {
   const [currentRoute, setCurrentRoute] =
     useState<ymaps.multiRouter.MultiRoute | null>(null);
   const [play, setPlay] = useState(false);
+  const [onFeet, setOnFeet] = useState(true);
   const [windowBlurred, setWindowBlurred] = useState(false);
   const [routeLoading, setRouteLoading] = useState(false);
   const [routeLoaded, setRouteLoaded] = useState(false);
@@ -46,10 +40,18 @@ export default function MapPage() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    // @ts-ignore
-    setDistance(currentRoute?.getActiveRoute()?.properties.get("distance", {value: 0, text: ''}).text);
-    // @ts-ignore
-    setTime(currentRoute?.getActiveRoute()?.properties.get("duration", {value: 0, text: ''}).text);
+    setDistance(
+      currentRoute
+        ?.getActiveRoute()
+        // @ts-ignore
+        ?.properties.get("distance", { value: 0, text: "" }).text
+    );
+    setTime(
+      currentRoute
+        ?.getActiveRoute()
+        // @ts-ignore
+        ?.properties.get("duration", { value: 0, text: "" }).text
+    );
   }, [currentRoute]);
 
   const defaultState = {
@@ -59,9 +61,7 @@ export default function MapPage() {
   };
 
   const options = {
-    enableHighAccuracy: true,
-    timeout: 1000,
-    maximumAge: 0,
+    enableHighAccuracy: false,
   };
 
   useEffect(() => {
@@ -74,12 +74,12 @@ export default function MapPage() {
     if (!("geolocation" in navigator)) {
       console.log("Геолокация не поддерживется на данном устройстве");
     } else {
-      // getPosition();
+      getPosition(false);
     }
     loadRoute(coords, points);
   }, [points, ymaps]);
 
-  const getPosition = () => {
+  const getPosition = (zoom: boolean = false) => {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         if (
@@ -94,6 +94,15 @@ export default function MapPage() {
           );
         }
         setCoords([position.coords.latitude, position.coords.longitude]);
+        if (zoom) {
+          mapRef.current?.setCenter(
+            [position.coords.latitude, position.coords.longitude],
+            18,
+            {
+              duration: 500,
+            }
+          );
+        }
       },
       (err) => console.log(err),
       options
@@ -102,14 +111,14 @@ export default function MapPage() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      getPosition();
+      getPosition(false);
     }, 10000);
 
     return () => clearInterval(interval);
   }, [points]);
 
   useEffect(() => {
-    getPosition();
+    getPosition(false);
     const onBlur = () => {
       setWindowBlurred(true);
     };
@@ -131,9 +140,15 @@ export default function MapPage() {
       setRouteLoaded(true);
       const multiRoute = new ymaps.multiRouter.MultiRoute(
         {
-          referencePoints: [coords, ...points.map((point) => [point.coordinates.lat, point.coordinates.lng])],
+          referencePoints: [
+            coords,
+            ...points.map((point) => [
+              point.coordinates.lat,
+              point.coordinates.lng,
+            ]),
+          ],
           params: {
-            routingMode: "pedestrian",
+            routingMode: onFeet ? "pedestrian" : "masstransit",
           },
         },
         {
@@ -173,6 +188,10 @@ export default function MapPage() {
     }
   }, [play]);
 
+  useEffect(() => {
+    loadRoute(coords, points);
+  }, [onFeet]);
+
   if (!ymaps) {
     // TODO: loading
     return null;
@@ -187,23 +206,18 @@ export default function MapPage() {
         <ArrowLeft className="size-8" />
       </div>
       <div className="fixed top-8 right-5 z-10 shadow-md p-3 bg-light-white rounded-2xl flex flex-col gap-6">
-        {/* <Route
-          className="size-8"
-          onClick={() => {
-            const route = searchParams.get("route");
-            if (route) {
-              setPoints(
-                route
-                  .split(";")
-                  .map((id) => places.find((place) => place._id === id))
-                  .filter((place) => place !== undefined)
-              );
-            }
-          }}
-        /> */}
-        <LocateFixed onClick={getPosition} />
-        {/* <Dices className="size-8" /> */}
+        <LocateFixed onClick={() => getPosition(true)} />
       </div>
+      {points.length > 0 ? (
+        <div
+          className="fixed top-24 right-5 z-10 shadow-md p-3 bg-light-white rounded-2xl flex flex-col gap-6"
+          onClick={() => setOnFeet((onFeet) => !onFeet)}
+        >
+          {onFeet ? <Bus /> : <Footprints />}
+        </div>
+      ) : (
+        ""
+      )}
       {points.length > 0 ? (
         <div className="flex gap-4 flex-col justify-center items-center w-full fixed bottom-28 z-10">
           {routeLoading ? (
@@ -219,7 +233,7 @@ export default function MapPage() {
       )}
 
       {routeLoaded ? (
-        <div className="fixed bottom-0 z-10 bg-light-white w-full p-5 flex items-stretch justify-between gap-4 rounded-t-3xl shadow-xl">
+        <div className="max-h-1/3 overflow-y-scroll fixed bottom-0 z-10 bg-light-white w-full p-5 flex gap-4 rounded-t-3xl shadow-xl flex-col">
           <Navigator
             mapRef={mapRef}
             coords={coords}

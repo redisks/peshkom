@@ -1,13 +1,19 @@
 "use client";
 
 import "./style.css";
-import { useEffect, useMemo, useState } from "react";
-import { MapPin, FlagTriangleLeft, Repeat } from "lucide-react";
+import { useEffect, useMemo, useState, Dispatch, SetStateAction } from "react";
+import { MapPin, FlagTriangleLeft, Repeat, ChevronLeft, ChevronRight } from "lucide-react";
 import { calculateDistance } from "@/lib/utils";
 import { IPlace } from "@/lib/types";
 import { useRouter } from "next/navigation";
 
-const PlaceTinder = ({ initialPlaces }: { initialPlaces: IPlace[] }) => {
+const PlaceTinder = ({
+  initialPlaces,
+  setStep,
+}: {
+  initialPlaces: IPlace[];
+  setStep: Dispatch<SetStateAction<number>>;
+}) => {
   const router = useRouter();
 
   const [isAnimating, setIsAnimating] = useState<
@@ -95,66 +101,89 @@ const PlaceTinder = ({ initialPlaces }: { initialPlaces: IPlace[] }) => {
   }, [coords]);
 
   return (
-    <div className="relative flex-1 m-4 rounded-2xl overflow-hidden shadow-xl">
-      <div
-        className={`card-${
-          places.length === 1 ? "end-" : "" + isAnimating
-        } relative z-10 flex flex-col justify-end h-full p-6 text-white bg-cover`}
-        style={{
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 1)), url(${currentPlace?.image})`,
-        }}
-      >
-        <div className="mb-2">
-          <h2 className="text-2xl font-bold mb-2">{currentPlace?.name}</h2>
+    <div className="flex flex-col">
+      <header className="flex justify-between items-center w-full gap-12 text-lg">
+        <div
+          className="flex gap-2 items-center cursor-pointer"
+          onClick={() => setStep(0)}
+        >
+          <ChevronLeft className="size-6" />
+          <span>Назад</span>
         </div>
-        <div className="flex flex-col gap-2 text-base mb-4">
-          <div className="flex items-center gap-2">
-            <MapPin className="size-8" />
-            <p>{currentPlace?.address}</p>
+        {/* link to map */}
+        <div
+          className="flex gap-2 items-center cursor-pointer text-pale-orange"
+          onClick={() => {
+            router.push(
+              "/map?route=" + yesPlaces.map((place) => place._id).join(";")
+            );
+          }}
+        >
+          <span>Готово</span>
+          <ChevronRight className="size-6" />
+        </div>
+      </header>
+      <div className="relative flex-1 m-4 rounded-2xl overflow-hidden shadow-xl">
+        <div
+          className={`card-${
+            places.length === 1 ? "end-" : "" + isAnimating
+          } relative z-10 flex flex-col justify-end h-full p-6 text-white bg-cover`}
+          style={{
+            backgroundImage: `linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 1)), url(${currentPlace?.image})`,
+          }}
+        >
+          <div className="mb-2">
+            <h2 className="text-2xl font-bold mb-2">{currentPlace?.name}</h2>
           </div>
-          <div className="flex items-center gap-2">
-            <FlagTriangleLeft className="size-8" />
-            <p>{distance} км от меня</p>
+          <div className="flex flex-col gap-2 text-base mb-4">
+            <div className="flex items-center gap-2">
+              <MapPin className="size-8" />
+              <p>{currentPlace?.address}</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <FlagTriangleLeft className="size-8" />
+              <p>{distance} км от меня</p>
+            </div>
+          </div>
+          <div className="relative flex justify-between items-center p-6">
+            {/* Кнопка "Не иду" */}
+            <button
+              onClick={() => handleSwipe("left")}
+              className="w-40 h-40 rounded-full bg-pale-orange/20 backdrop-blur-2xl flex items-center justify-center shadow-lg transition-colors text-2xl font-medium absolute -bottom-10 -left-10 rounded-bl-2xl"
+              style={{ boxShadow: "inset 5px 5px 10px white" }}
+              aria-label="Не иду"
+            >
+              Не иду
+            </button>
+
+            {/* Кнопка обновления */}
+            <button
+              onClick={handleRefresh}
+              className={`w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center shadow-lg hover:bg-gray-300 transition-colors mx-auto z-10 ${
+                places.length === 1 ? "opacity-0" : ""
+              }`}
+              aria-label="Обновить"
+            >
+              <Repeat className="size-6 text-light-black" />
+            </button>
+
+            {/* Кнопка "Иду" */}
+            <button
+              onClick={() => handleSwipe("right")}
+              className="w-40 h-40 rounded-full bg-pale-orange/20 backdrop-blur-2xl flex items-center justify-center shadow-lg transition-colors text-2xl font-medium absolute -bottom-10 -right-10 rounded-br-2xl"
+              style={{ boxShadow: "inset 5px 5px 10px white" }}
+              aria-label="Иду"
+            >
+              Иду
+            </button>
           </div>
         </div>
-        <div className="relative flex justify-between items-center p-6">
-          {/* Кнопка "Не иду" */}
-          <button
-            onClick={() => handleSwipe("left")}
-            className="w-40 h-40 rounded-full bg-pale-orange/20 backdrop-blur-2xl flex items-center justify-center shadow-lg transition-colors text-2xl font-medium absolute -bottom-10 -left-10 rounded-bl-2xl"
-            style={{ boxShadow: "inset 5px 5px 10px white" }}
-            aria-label="Не иду"
-          >
-            Не иду
-          </button>
 
-          {/* Кнопка обновления */}
-          <button
-            onClick={handleRefresh}
-            className={`w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center shadow-lg hover:bg-gray-300 transition-colors mx-auto z-10 ${
-              places.length === 1 ? "opacity-0" : ""
-            }`}
-            aria-label="Обновить"
-          >
-            <Repeat className="size-6 text-light-black" />
-          </button>
-
-          {/* Кнопка "Иду" */}
-          <button
-            onClick={() => handleSwipe("right")}
-            className="w-40 h-40 rounded-full bg-pale-orange/20 backdrop-blur-2xl flex items-center justify-center shadow-lg transition-colors text-2xl font-medium absolute -bottom-10 -right-10 rounded-br-2xl"
-            style={{ boxShadow: "inset 5px 5px 10px white" }}
-            aria-label="Иду"
-          >
-            Иду
-          </button>
-        </div>
+        {/* Анимация свайпа */}
+        {isAnimating && (
+          <div className="absolute inset-0 bg-white/20 animate-pulse" />
+        )}
       </div>
-
-      {/* Анимация свайпа */}
-      {isAnimating && (
-        <div className="absolute inset-0 bg-white/20 animate-pulse" />
-      )}
     </div>
   );
 };

@@ -35,7 +35,7 @@ export default function GlobalSearch({ coords }: { coords: [number, number] }) {
             (place) =>
               place.name.toLowerCase().includes(searchQuery) ||
               place.address.toLowerCase().includes(searchQuery) ||
-              place.tags.some((tag) => tag.toLowerCase().includes(searchQuery))
+              place.tags.join(";").toLowerCase().includes(searchQuery)
           )
           .sort(
             (a, b) =>
@@ -52,7 +52,7 @@ export default function GlobalSearch({ coords }: { coords: [number, number] }) {
             (place) =>
               place.name.toLowerCase().includes(searchQuery) ||
               place.address.toLowerCase().includes(searchQuery) ||
-              place.tags.some((tag) => tag.toLowerCase().includes(searchQuery))
+              place.tags.join(";").toLowerCase().includes(searchQuery)
           )
           .sort(
             (a, b) =>
@@ -70,8 +70,17 @@ export default function GlobalSearch({ coords }: { coords: [number, number] }) {
       setSelectedAddresses(points);
     }
     const route = searchParams.get("route");
-    if (route && route.split(';').length > 0 && selectedAddresses.length === 0) {
-      setSelectedAddresses(route.split(';').map((id) => places.find(pl => pl._id === id)).filter(pl => pl !== undefined));
+    if (
+      route &&
+      route.split(";").length > 0 &&
+      selectedAddresses.length === 0
+    ) {
+      setSelectedAddresses(
+        route
+          .split(";")
+          .map((id) => places.find((pl) => pl._id === id))
+          .filter((pl) => pl !== undefined)
+      );
     }
   }, []);
 
@@ -96,13 +105,16 @@ export default function GlobalSearch({ coords }: { coords: [number, number] }) {
           <Frown className="size-8" />
         </div>
       ) : (
-        <div className="w-11/12 px-3 flex flex-col justify-start overflow-y-scroll gap-4 flex-1 max-h-4/5">
+        <div className="w-11/12 px-3 flex flex-col justify-start overflow-y-scroll gap-4 flex-1 max-h-4/5" style={{
+          scrollbarGutter: 'stable'
+        }}>
           {searchParams.get("route") ? (
-            <div className="px-10 py-2 border-1 border-light-black rounded-xl flex justify-between items-center" onClick={(evt) => setIsSelected(isSelected => !isSelected)}>
+            <div
+              className="px-10 py-2 border-1 border-light-black rounded-xl flex justify-between items-center"
+              onClick={(evt) => setIsSelected((isSelected) => !isSelected)}
+            >
               <span className="flex-1 text-start">Все</span>
-              <Switch
-                checked={isSelected}
-              />
+              <Switch checked={isSelected} />
               <span className="flex-1 text-end">Ваши</span>
             </div>
           ) : (
@@ -163,7 +175,7 @@ export default function GlobalSearch({ coords }: { coords: [number, number] }) {
         <div className="w-full flex justify-center">
           <Button
             className="w-5/6 bg-pale-orange/80 backdrop-blur-sm fixed bottom-5 py-7 rounded-3xl shadow-xl text-white flex justify-center items-center gap-4"
-            style={{background: 'radial-gradient(#FD4B27 33%, #FE9F5D 75%)'}}
+            style={{ background: "radial-gradient(#FD4B27 33%, #FE9F5D 75%)" }}
             onClick={() => setPoints(selectedAddresses)}
           >
             <span className="text-2xl font-medium">Добавить</span>

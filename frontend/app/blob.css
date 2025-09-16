@@ -1,16 +1,10 @@
 .blob {
-  transition: .5s;;
-  background-image: url("../public/images/blob.svg");
-  background-size: cover;
-  background-repeat: no-repeat;
+  border-radius: 50%;
+  transition: .5s;
 }
 
 .blob[data-selected="true"] {
-  transition: .5s;;
-  filter: hue-rotate(0deg) saturate(2) brightness(1.1);
-}
-
-.blob:hover {
-  transition: .5s;;
-  filter: hue-rotate(0deg) saturate(2) brightness(1.1);
+  transition: .5s;
+  /* filter: hue-rotate(0deg) saturate(2) brightness(1.1); */
+  background: rgba(249, 83, 49, .3);
 }

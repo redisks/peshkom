@@ -18,7 +18,7 @@ const Navigator = ({
   loadRoute,
   getPosition,
   time,
-  distance
+  distance,
 }: {
   mapRef: RefObject<ymaps.Map | undefined>;
   coords: [number, number];
@@ -57,84 +57,76 @@ const Navigator = ({
   };
 
   return (
-    <div className="max-w-md w-full">
-      <div className="w-full flex flex-col gap-2 py-5">
-        {!play
-          ? points.map((place, index) => (
-              <div
-                key={place._id}
-                className="flex items-center points-center p-3 bg-gray-50 border border-gray-200 rounded-lg gap-2"
-              >
-                <div className="flex flex-col gap-1 mr-2">
-                  <button
-                    onClick={() => moveUp(index)}
-                    disabled={index === 0}
-                    className="p-1 border border-gray-300 rounded hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-gray-50"
-                    title="Вверх"
-                  >
-                    <ChevronUp size={16} />
-                  </button>
+    <div className={`relative w-full flex flex-col items-center gap-2 py-5 h-full ${play ? 'pb-5' : 'pb-24'}`}>
+      {!play
+        ? points.map((place, index) => (
+            <div
+              key={place._id}
+              className="flex w-full items-center points-center p-3 bg-gray-50 border border-gray-200 rounded-lg gap-2"
+            >
+              <div className="flex flex-col gap-1 mr-2">
+                <button
+                  onClick={() => moveUp(index)}
+                  disabled={index === 0}
+                  className="p-1 border border-gray-300 rounded hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-gray-50"
+                  title="Вверх"
+                >
+                  <ChevronUp size={16} />
+                </button>
 
-                  <button
-                    onClick={() => moveDown(index)}
-                    disabled={index === points.length - 1}
-                    className="p-1 border border-gray-300 rounded hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-gray-50"
-                    title="Вниз"
-                  >
-                    <ChevronDown size={16} />
-                  </button>
-                </div>
-                <div className="font-bold text-gray-500 min-w-[24px] text-center">
-                  {index + 1}
-                </div>
-                <div className="flex-1">{place.name}</div>
+                <button
+                  onClick={() => moveDown(index)}
+                  disabled={index === points.length - 1}
+                  className="p-1 border border-gray-300 rounded hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-gray-50"
+                  title="Вниз"
+                >
+                  <ChevronDown size={16} />
+                </button>
               </div>
-            ))
-          : ""}
-        {!play ? (
-          <Button
-            className={`w-5/6 mx-auto py-7 rounded-3xl shadow-xl text-light-white flex justify-center items-center gap-4 mt-5`}
-            style={{ background: "radial-gradient(#FD4B27 33%, #FE9F5D 75%)" }}
-            onClick={() => {
-              setPlay(true);
-              mapRef.current?.setCenter(coords, 18, {
-                duration: 500,
-              });
-            }}
-          >
-            <span className="text-2xl font-medium">ПОШЛИ!</span>
-          </Button>
-        ) : (
-          <div className='flex-col w-full gap-4 items-center font-medium'>
-            <header className='text-center w-full text-lg'>
-              {time}
-            </header>
-            <div className='text-center w-full'>
-              {distance}
+              <div className="font-bold text-gray-500 min-w-[24px] text-center">
+                {index + 1}
+              </div>
+              <div className="flex-1">{place.name}</div>
             </div>
-            <div className="w-full flex gap-4 justify-center items-center">
-              <div
-                className="p-5 bg-light-white rounded-[50%] shadow-xl"
-                onClick={() => loadRoute(coords, points)}
-              >
-                <Repeat className="size-8" />
-              </div>
-              <div
-                className="p-5 bg-light-white rounded-[50%] shadow-xl"
-                onClick={() => getPosition()}
-              >
-                <LocateFixed className="size-8" />
-              </div>
-              <div
-                className="p-5 bg-light-white rounded-[50%] shadow-xl"
-                onClick={() => exitRoute()}
-              >
-                <X className="size-8" />
-              </div>
+          ))
+        : ""}
+      {!play ? (
+        <Button
+          className={`w-5/6 mx-auto py-7 rounded-3xl shadow-xl text-light-white flex justify-center items-center gap-4 mt-5 fixed bottom-3`}
+          style={{ background: "radial-gradient(#FD4B27 33%, #FE9F5D 75%)" }}
+          onClick={() => {
+            setPlay(true);
+            getPosition(true);
+          }}
+        >
+          <span className="text-2xl font-medium">ПОШЛИ!</span>
+        </Button>
+      ) : (
+        <div className="flex-col w-full gap-4 justify-center items-center font-medium">
+          <header className="text-center w-full text-lg">{time}</header>
+          <div className="text-center w-full">{distance}</div>
+          <div className="w-full flex gap-4 justify-center items-center">
+            <div
+              className="p-5 bg-light-white rounded-[50%] shadow-xl"
+              onClick={() => loadRoute(coords, points)}
+            >
+              <Repeat className="size-8" />
+            </div>
+            <div
+              className="p-5 bg-light-white rounded-[50%] shadow-xl"
+              onClick={() => getPosition(true)}
+            >
+              <LocateFixed className="size-8" />
+            </div>
+            <div
+              className="p-5 bg-light-white rounded-[50%] shadow-xl"
+              onClick={() => exitRoute()}
+            >
+              <X className="size-8" />
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

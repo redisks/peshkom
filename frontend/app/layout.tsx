@@ -65,7 +65,7 @@ export default function RootLayout({
                 value={{ points: points, setPoints: setPoints }}
               >
                 <AuthProvider>
-                  <AuthCheck>
+                  {/* <AuthCheck> */}
                     <div className="flex justify-center w-full h-full">
                       {pathname.includes("/auth") ||
                       pathname.includes("/map") ? null : pathname.includes(
@@ -138,7 +138,7 @@ export default function RootLayout({
                         </nav>
                       )}
                     </div>
-                  </AuthCheck>
+                  {/* </AuthCheck> */}
                 </AuthProvider>
               </PointsContext.Provider>
             </YMaps>
