@@ -113,18 +113,18 @@ export default function RootLayout({
                       {pathname.includes("/auth") ||
                       pathname.includes("/map") ? null : (
                         <nav
-                          className={`flex justify-between gap-4 items-center mb-5 h-20 w-11/12 max-w-screen fixed bottom-0 bg-white shadow-2xl rounded-3xl z-20 ${
+                          className={`flex justify-between gap-4 items-center mb-5 py-5 w-10/12 max-w-screen fixed bottom-0 bg-white shadow-2xl rounded-3xl z-20 ${
                             pathname.includes("place/") ? "hidden" : ""
                           }`}
                         >
-                          <Link href="/posts" className={`flex justify-center items-center rounded-3xl flex-1 h-full ${pathname.includes('/post') ? 'bg-pale-orange text-white' : ''}`}>
-                            <PanelTop className="size-10" />
+                          <Link href="/posts" className={`flex justify-center items-center rounded-3xl flex-1 h-full`}>
+                            <PanelTop className={`size-8 ${pathname.includes('/post') ? 'text-pale-orange' : ''}`} />
                           </Link>
-                          <Link href="/" className={`flex justify-center items-center rounded-3xl flex-1 h-full ${pathname === "/" ? 'bg-pale-orange text-white' : ''}`}>
-                            <Footprints className="size-12" />
+                          <Link href="/" className={`flex justify-center items-center rounded-3xl flex-1 h-full`}>
+                            <Footprints className={`size-8 ${pathname === '/' ? 'text-pale-orange' : ''}`} />
                           </Link>
-                          <Link href="/map" className={`flex justify-center items-center rounded-3xl flex-1 h-full ${pathname === "/map" ? 'bg-pale-orange text-white' : ''}`}>
-                            <Map className="size-10" />
+                          <Link href="/map" className={`flex justify-center items-center rounded-3xl flex-1 h-full`}>
+                            <Map className={`size-8 ${pathname.includes('/map') ? 'text-pale-orange' : ''}`} />
                           </Link>
                           {/* <Link href="/">
                             <MessageCircleHeart className="size-8" />

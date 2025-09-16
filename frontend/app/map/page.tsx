@@ -7,10 +7,6 @@ import {
   Dices,
   Sparkle,
   Search,
-  Play,
-  Pause,
-  Repeat,
-  X,
   LocateFixed,
 } from "lucide-react";
 import {
@@ -27,7 +23,6 @@ import { useEffect, useState, useRef, useContext } from "react";
 import { PointsContext } from "@/context/PointsContext";
 import { useSearchParams } from "next/navigation";
 import { IPlace } from "@/lib/types";
-import { places } from "@/data/places";
 import Navigator from "@/components/Navigator";
 
 export default function MapPage() {
@@ -36,9 +31,8 @@ export default function MapPage() {
   const router = useRouter();
   const { points, setPoints } = useContext(PointsContext);
   const [drawerOpened, setDrawerOpened] = useState<boolean>(false);
-  const [routeDrawerOpened, setRouteDrawerOpened] = useState<boolean>(false);
   const [coords, setCoords] = useState<[number, number]>([
-    55.768418, 37.588948,
+    44.555944, 34.314654,
   ]);
   const [currentRoute, setCurrentRoute] =
     useState<ymaps.multiRouter.MultiRoute | null>(null);
@@ -46,12 +40,21 @@ export default function MapPage() {
   const [windowBlurred, setWindowBlurred] = useState(false);
   const [routeLoading, setRouteLoading] = useState(false);
   const [routeLoaded, setRouteLoaded] = useState(false);
+  const [distance, setDistance] = useState("");
+  const [time, setTime] = useState("");
 
   const searchParams = useSearchParams();
 
+  useEffect(() => {
+    // @ts-ignore
+    setDistance(currentRoute?.getActiveRoute()?.properties.get("distance", {value: 0, text: ''}).text);
+    // @ts-ignore
+    setTime(currentRoute?.getActiveRoute()?.properties.get("duration", {value: 0, text: ''}).text);
+  }, [currentRoute]);
+
   const defaultState = {
-    center: [55.768418, 37.588948],
-    zoom: 13,
+    center: [44.555944, 34.314654],
+    zoom: 14,
     controls: [],
   };
 
@@ -106,6 +109,7 @@ export default function MapPage() {
   }, [points]);
 
   useEffect(() => {
+    getPosition();
     const onBlur = () => {
       setWindowBlurred(true);
     };
@@ -183,7 +187,7 @@ export default function MapPage() {
         <ArrowLeft className="size-8" />
       </div>
       <div className="fixed top-8 right-5 z-10 shadow-md p-3 bg-light-white rounded-2xl flex flex-col gap-6">
-        <Route
+        {/* <Route
           className="size-8"
           onClick={() => {
             const route = searchParams.get("route");
@@ -196,8 +200,9 @@ export default function MapPage() {
               );
             }
           }}
-        />
-        <Dices className="size-8" />
+        /> */}
+        <LocateFixed onClick={getPosition} />
+        {/* <Dices className="size-8" /> */}
       </div>
       {points.length > 0 ? (
         <div className="flex gap-4 flex-col justify-center items-center w-full fixed bottom-28 z-10">
@@ -221,6 +226,8 @@ export default function MapPage() {
             exitRoute={exitRoute}
             loadRoute={loadRoute}
             getPosition={getPosition}
+            time={time}
+            distance={distance}
           />
         </div>
       ) : (
@@ -231,14 +238,14 @@ export default function MapPage() {
           <DrawerTrigger className="fixed bottom-0 z-10 bg-light-white w-full p-5 flex items-stretch justify-between gap-4 rounded-t-3xl shadow-xl">
             <div className="flex flex-1 items-center relative">
               <Input
-                placeholder="Что хотите посетить?"
+                placeholder="Куда?"
                 className="flex-1 h-full shadow-md py-4 rounded-2xl"
               />
               <Search className="size-6 text-neutral-500 absolute right-4" />
             </div>
-            <div className="p-3 bg-light-white shadow-md rounded-2xl">
+            {/* <div className="p-3 bg-light-white shadow-md rounded-2xl">
               <Sparkle className="size-8" />
-            </div>
+            </div> */}
           </DrawerTrigger>
           <DrawerContent className="h-[95%]">
             <DrawerHeader className="w-full flex items-stretch justify-between">

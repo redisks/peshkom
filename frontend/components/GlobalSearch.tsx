@@ -79,7 +79,7 @@ export default function GlobalSearch({ coords }: { coords: [number, number] }) {
     <div className="flex items-center justify-start w-full h-full flex-col gap-4 relative">
       <header className="flex items-center relative w-11/12">
         <Input
-          placeholder="Что хотите посетить?"
+          placeholder="Куда?"
           className="flex-1 h-full shadow-md py-4 rounded-2xl"
           onChange={(evt) => setSearchQuery(evt.target.value.toLowerCase())}
         />

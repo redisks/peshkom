@@ -17,12 +17,16 @@ const Navigator = ({
   exitRoute,
   loadRoute,
   getPosition,
+  time,
+  distance
 }: {
   mapRef: RefObject<ymaps.Map | undefined>;
   coords: [number, number];
   exitRoute: Function;
   loadRoute: Function;
   getPosition: Function;
+  time: string;
+  distance: string;
 }) => {
   const { points, setPoints } = useContext(PointsContext);
 
@@ -61,7 +65,6 @@ const Navigator = ({
                 key={place._id}
                 className="flex items-center points-center p-3 bg-gray-50 border border-gray-200 rounded-lg gap-2"
               >
-                {/* Кнопки управления */}
                 <div className="flex flex-col gap-1 mr-2">
                   <button
                     onClick={() => moveUp(index)}
@@ -91,7 +94,7 @@ const Navigator = ({
         {!play ? (
           <Button
             className={`w-5/6 mx-auto py-7 rounded-3xl shadow-xl text-light-white flex justify-center items-center gap-4 mt-5`}
-            style={{background: 'radial-gradient(#FD4B27 33%, #FE9F5D 75%)'}}
+            style={{ background: "radial-gradient(#FD4B27 33%, #FE9F5D 75%)" }}
             onClick={() => {
               setPlay(true);
               mapRef.current?.setCenter(coords, 18, {
@@ -102,24 +105,32 @@ const Navigator = ({
             <span className="text-2xl font-medium">ПОШЛИ!</span>
           </Button>
         ) : (
-          <div className="w-full flex gap-4 justify-center items-center">
-            <div
-              className="p-5 bg-light-white rounded-[50%] shadow-xl"
-              onClick={() => loadRoute(coords, points)}
-            >
-              <Repeat className="size-8" />
+          <div className='flex-col w-full gap-4 items-center font-medium'>
+            <header className='text-center w-full text-lg'>
+              {time}
+            </header>
+            <div className='text-center w-full'>
+              {distance}
             </div>
-            <div
-              className="p-5 bg-light-white rounded-[50%] shadow-xl"
-              onClick={() => getPosition()}
-            >
-              <LocateFixed className="size-8" />
-            </div>
-            <div
-              className="p-5 bg-light-white rounded-[50%] shadow-xl"
-              onClick={() => exitRoute()}
-            >
-              <X className="size-8" />
+            <div className="w-full flex gap-4 justify-center items-center">
+              <div
+                className="p-5 bg-light-white rounded-[50%] shadow-xl"
+                onClick={() => loadRoute(coords, points)}
+              >
+                <Repeat className="size-8" />
+              </div>
+              <div
+                className="p-5 bg-light-white rounded-[50%] shadow-xl"
+                onClick={() => getPosition()}
+              >
+                <LocateFixed className="size-8" />
+              </div>
+              <div
+                className="p-5 bg-light-white rounded-[50%] shadow-xl"
+                onClick={() => exitRoute()}
+              >
+                <X className="size-8" />
+              </div>
             </div>
           </div>
         )}
