@@ -88,15 +88,10 @@ export default function RootLayout({
                           </div>
                         </header>
                       ) : (
-                        <header className="w-full bg-light-white flex justify-between p-5 fixed top-0 z-10">
-                          <MoveLeft
-                            className="size-8"
-                            onClick={() => router.back()}
-                          />
+                        <header className="w-full bg-light-white flex justify-center p-5 fixed top-0 z-10">
                           <span className="font-unbounded font-medium text-xl h-8 flex items-center">
                             PESHKOM
                           </span>
-                          <CircleUser className="size-8" />
                         </header>
                       )}
                       <main

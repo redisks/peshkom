@@ -47,10 +47,10 @@ const DEFAULT_ELEMENTS: ElementItem[] = [
 ];
 
 const DEFAULTS = {
-  maxVerticalRotationDeg: 5,
+  maxVerticalRotationDeg: 10,
   dragSensitivity: 20,
   enlargeTransitionMs: 300,
-  segments: 25,
+  segments: 20,
 };
 
 const clamp = (v: number, min: number, max: number) =>

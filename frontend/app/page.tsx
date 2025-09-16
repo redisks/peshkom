@@ -24,15 +24,15 @@ export default function Home() {
 
   useEffect(() => {
     setPresentedCategories(
-      categories.sort((a, b) => 0.5 - Math.random()).slice(0, 6)
+      categories.sort((a, b) => 0.5 - Math.random())
     );
   }, []);
 
   return (
-    <main className="flex gap-4 flex-col items-center p-5 w-full h-full">
+    <main className="flex gap-4 flex-col items-center py-5 w-full h-full">
       {step === 0 ? (
         <>
-          <header className="flex justify-between items-center w-full gap-12 text-lg">
+          <header className="flex justify-between items-center w-full gap-12 text-lg px-5">
             <Link href="/map" className="text-neutral-500">
               Пропустить
             </Link>
@@ -58,13 +58,14 @@ export default function Home() {
             </header>
             <section className="w-full h-full">
               <DomeGallery
+                segments={categories.length}
                 elements={presentedCategories.map((category, index) => {
                   return {
                     id: category,
                     key: index,
                     content: (
                       <div
-                        className="blob flex justify-center items-center text-center w-full h-full break-all p-5"
+                        className="blob flex justify-center items-center text-center w-full h-full break-keep p-5"
                         data-selected={
                           selectedCategories.includes(category)
                             ? "true"
