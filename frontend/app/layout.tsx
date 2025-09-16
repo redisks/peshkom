@@ -78,17 +78,17 @@ export default function RootLayout({
                               onClick={() => router.back()}
                             />
                           </div>
-                          <div className="flex gap-4 items-center">
+                          {/* <div className="flex gap-4 items-center">
                             <div className="p-2 bg-light-white rounded-4xl shadow-md">
                               <Sparkle className="size-6" />
                             </div>
                             <div className="p-2 bg-light-white rounded-4xl shadow-md">
                               <Share className="size-6" />
                             </div>
-                          </div>
+                          </div> */}
                         </header>
                       ) : (
-                        <header className="w-full bg-light-white flex justify-center p-5 fixed top-0 z-10">
+                        <header className="w-full bg-light-white flex justify-center p-5 pb-0 fixed top-0 z-10">
                           <span className="font-unbounded font-medium text-xl h-8 flex items-center">
                             PESHKOM
                           </span>
@@ -100,7 +100,7 @@ export default function RootLayout({
                           pathname.includes("/map") ||
                           pathname.includes("/auth")
                             ? "mt-0"
-                            : "mt-20 pb-20"
+                            : "mt-10 pb-10"
                         }`}
                       >
                         {children}

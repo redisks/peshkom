@@ -100,6 +100,7 @@ const Navigator = ({
           }}
         >
           <span className="text-2xl font-medium">ПОШЛИ!</span>
+          <Footprints className='size-8' />
         </Button>
       ) : (
         <div className="flex-col w-full gap-4 justify-center items-center font-medium">

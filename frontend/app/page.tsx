@@ -33,7 +33,7 @@ export default function Home() {
       {step === 0 ? (
         <>
           <header className="flex justify-between items-center w-full gap-12 text-lg px-5">
-            <Link href="/map" className="text-neutral-500">
+            <Link href="/map" className="text-neutral-500!">
               Пропустить
             </Link>
             <div
@@ -52,7 +52,7 @@ export default function Home() {
           </header>
           <div className="w-full h-full">
             <header
-              className={`my-5 w-full bg-light-white text-center text-2xl ${GirloSP.className}`}
+              className={`mb-2 w-full bg-light-white text-center text-2xl ${GirloSP.className}`}
             >
               Куда идем?
             </header>

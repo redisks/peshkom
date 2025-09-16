@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Search, Frown, Footprints } from "lucide-react";
+import { Search, Frown, Footprints, Plus } from "lucide-react";
 import { places } from "@/data/places";
 import { IPlace } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -179,7 +179,7 @@ export default function GlobalSearch({ coords }: { coords: [number, number] }) {
             onClick={() => setPoints(selectedAddresses)}
           >
             <span className="text-2xl font-medium">Добавить</span>
-            <Footprints className="size-6" />
+            <Plus className="size-8" />
           </Button>
         </div>
       ) : (

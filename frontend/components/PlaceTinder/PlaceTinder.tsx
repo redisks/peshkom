@@ -101,7 +101,7 @@ const PlaceTinder = ({
   }, [coords]);
 
   return (
-    <div className="flex flex-col h-11/12">
+    <div className="flex flex-col h-full mb-14">
       <header className="flex justify-between items-center w-full gap-12 text-lg px-5">
         <div
           className="flex gap-2 items-center cursor-pointer"
