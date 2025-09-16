@@ -233,7 +233,7 @@ export default function MapPage() {
       )}
 
       {routeLoaded ? (
-        <div className="max-h-1/3 overflow-y-scroll fixed bottom-0 z-10 bg-light-white w-full p-5 flex gap-4 rounded-t-3xl shadow-xl flex-col">
+        <div className="fixed bottom-0 z-10 bg-light-white w-full p-5 flex gap-4 rounded-t-3xl shadow-xl flex-col">
           <Navigator
             mapRef={mapRef}
             coords={coords}

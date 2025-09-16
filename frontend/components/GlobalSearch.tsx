@@ -13,7 +13,7 @@ import { useContext } from "react";
 import { PointsContext } from "@/context/PointsContext";
 import { useSearchParams } from "next/navigation";
 import { Switch } from "@/components/ui/switch";
-import { calculateDistance } from '@/lib/utils';
+import { calculateDistance } from "@/lib/utils";
 
 export default function GlobalSearch({ coords }: { coords: [number, number] }) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -96,19 +96,22 @@ export default function GlobalSearch({ coords }: { coords: [number, number] }) {
         <Search className="size-6 text-neutral-500 absolute right-4" />
       </header>
       <div className="w-full text-center text-sm text-neutral-400">
-        Нажмите на название, чтобы изучить подробнее
+        Нажмите на картинку, чтобы изучить подробнее
       </div>
       {results.length === 0 ? (
         <div className="flex flex-col gap-4 w-10/12 mt-10 justify-center items-center">
           <span className="font-unbouded text-lg text-center">
-            Мы ничего не нашли, но в будущем будет больше вариантов!
+            Мы ничего не нашли!
           </span>
           <Frown className="size-8" />
         </div>
       ) : (
-        <div className="w-11/12 px-3 flex flex-col justify-start overflow-y-scroll gap-6 flex-1 max-h-4/5" style={{
-          scrollbarGutter: 'stable'
-        }}>
+        <div
+          className="w-11/12 px-3 flex flex-col justify-start overflow-y-scroll gap-6 flex-1 max-h-4/5"
+          style={{
+            scrollbarGutter: "stable",
+          }}
+        >
           {searchParams.get("route") ? (
             <div
               className="px-10 py-2 border-1 border-light-black rounded-xl flex justify-between items-center"
@@ -144,20 +147,22 @@ export default function GlobalSearch({ coords }: { coords: [number, number] }) {
               }}
             >
               <div className="flex gap-4 items-stretch">
-                <Avatar className="size-14">
-                  <AvatarImage src={place.image} />
-                  <AvatarFallback>{place.name[0]}</AvatarFallback>
-                </Avatar>
+                <Link href={`/place/${place._id}`}>
+                  <Avatar className="size-12">
+                    <AvatarImage src={place.image} />
+                    <AvatarFallback>{place.name[0]}</AvatarFallback>
+                  </Avatar>
+                </Link>
                 <div className="flex flex-col">
-                  <Link
-                    href={`/place/${place._id}`}
-                    className="font-medium"
-                    onClick={(evt) => evt.stopPropagation()}
-                  >
-                    {place.name}
-                  </Link>
+                  <div className="font-medium text-lg">{place.name}</div>
                   <span className="text-sm text-neutral-400">
-                    {calculateDistance(coords[0], coords[1], place.coordinates.lat, place.coordinates.lng).toFixed(1)} км
+                    {calculateDistance(
+                      coords[0],
+                      coords[1],
+                      place.coordinates.lat,
+                      place.coordinates.lng
+                    ).toFixed(1)}{" "}
+                    км
                   </span>
                 </div>
               </div>

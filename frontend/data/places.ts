@@ -853,7 +853,7 @@ export const places: IPlace[] = [
   },
   {
     _id: "28",
-    name: "Галерея современного искусства «White Gallery»\nИсточник: https://must-see.top/dostoprimechatelnosti-gurzufa/",
+    name: "Галерея современного искусства «White Gallery»",
     coordinates: {
       lat: 44.541934,
       lng: 34.2761,

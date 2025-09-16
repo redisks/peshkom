@@ -46,18 +46,21 @@ const PlaceTinder = ({
     setIsAnimating(direction);
 
     setTimeout(() => {
-      const newYesPlaces = Array.from(new Set([...yesPlaces, currentPlace]));
+      let newYesPlaces: IPlace[] = [];
       if (direction === "left") {
         setNoPlaces(Array.from(new Set([...noPlaces, currentPlace])));
         if (places.length > 1) {
           setPlaces(places.filter((place) => place._id !== currentPlace._id));
         }
       } else if (direction === "right") {
+        newYesPlaces = Array.from(new Set([...yesPlaces, currentPlace]))
         setYesPlaces(newYesPlaces);
         if (places.length > 1) {
           setPlaces(places.filter((place) => place._id !== currentPlace._id));
         }
       }
+
+      console.log(newYesPlaces);
 
       if (places.length === 1) {
         router.push(

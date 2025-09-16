@@ -88,7 +88,7 @@ export default function RootLayout({
                           </div> */}
                         </header>
                       ) : (
-                        <header className="w-full bg-light-white flex justify-center p-5 pb-0 fixed top-0 z-10">
+                        <header className="w-full bg-light-white flex justify-center p-5 pb-2 fixed top-0 z-10">
                           <span className="font-unbounded font-medium text-xl h-8 flex items-center">
                             PESHKOM
                           </span>
