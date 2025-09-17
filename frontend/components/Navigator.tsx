@@ -101,14 +101,14 @@ const Navigator = ({
           >
             <Repeat className="size-8" />
           </div>
-          <div
+          {/* <div
             className="p-5 bg-light-white rounded-[50%] shadow-xl"
             onClick={() => getPosition(true)}
           >
             <LocateFixed className="size-8" />
-          </div>
+          </div> */}
           <div
-            className="p-5 bg-light-white rounded-[50%] shadow-xl"
+            className="p-4 bg-light-white rounded-[50%] shadow-xl"
             onClick={() => exitRoute()}
           >
             <X className="size-8" />

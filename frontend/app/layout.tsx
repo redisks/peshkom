@@ -52,7 +52,7 @@ export default function RootLayout({
           <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"></meta>
         </Head>
         <body
-          className={`${unbounded.variable} ${inter.variable} h-screen max-h-screen w-screen bg-background text-light-black overflow-x-hiddenT ${unbounded.className}`}
+          className={`${unbounded.variable} ${inter.variable} h-[100dvh] max-h-[100dvh] w-screen bg-background text-light-black overflow-x-hiddenT ${unbounded.className}`}
         >
           <Suspense fallback="">
             <YMaps
@@ -64,7 +64,7 @@ export default function RootLayout({
               <PointsContext.Provider
                 value={{ points: points, setPoints: setPoints }}
               >
-                <AuthProvider>
+                {/* <AuthProvider> */}
                   {/* <AuthCheck> */}
                     <div className="flex justify-center w-full h-full">
                       {pathname.includes("/auth") ||
@@ -134,7 +134,7 @@ export default function RootLayout({
                       )}
                     </div>
                   {/* </AuthCheck> */}
-                </AuthProvider>
+                {/* </AuthProvider> */}
               </PointsContext.Provider>
             </YMaps>
           </Suspense>

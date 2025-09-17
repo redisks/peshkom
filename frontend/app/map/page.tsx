@@ -1,7 +1,14 @@
 "use client";
 
 import { Map, useYMaps, Placemark } from "@iminside/react-yandex-maps";
-import { ArrowLeft, Bus, Footprints, Search, LocateFixed, House } from "lucide-react";
+import {
+  LoaderCircle,
+  Bus,
+  Footprints,
+  Search,
+  LocateFixed,
+  House,
+} from "lucide-react";
 import {
   Drawer,
   DrawerContent,
@@ -12,7 +19,13 @@ import {
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import GlobalSearch from "@/components/GlobalSearch";
-import { useEffect, useState, useRef, useContext } from "react";
+import {
+  useEffect,
+  useState,
+  useRef,
+  useContext,
+  useLayoutEffect,
+} from "react";
 import { PointsContext } from "@/context/PointsContext";
 import { useSearchParams } from "next/navigation";
 import { IPlace } from "@/lib/types";
@@ -36,6 +49,7 @@ export default function MapPage() {
   const [routeLoaded, setRouteLoaded] = useState(false);
   const [distance, setDistance] = useState("");
   const [time, setTime] = useState("");
+  const [positionLoading, setPositionLoading] = useState(false);
 
   const searchParams = useSearchParams();
 
@@ -64,6 +78,17 @@ export default function MapPage() {
     enableHighAccuracy: false,
   };
 
+  useLayoutEffect(() => {
+    const timeout = setTimeout(() => {
+      if (!("geolocation" in navigator)) {
+        console.log("Геолокация не поддерживется на данном устройстве");
+      } else {
+        getPosition(true);
+      }
+    }, 500);
+    return () => clearTimeout(timeout);
+  }, []);
+
   useEffect(() => {
     if (searchParams.get("route")) {
       setDrawerOpened(true);
@@ -74,10 +99,10 @@ export default function MapPage() {
     if (!("geolocation" in navigator)) {
       console.log("Геолокация не поддерживется на данном устройстве");
     } else {
-      getPosition(false);
+      getPosition(true);
     }
     loadRoute(coords, points);
-  }, [points, ymaps]);
+  }, [points, ymaps, mapRef]);
 
   const getPosition = (zoom: boolean = false) => {
     navigator.geolocation.getCurrentPosition(
@@ -94,14 +119,19 @@ export default function MapPage() {
           );
         }
         setCoords([position.coords.latitude, position.coords.longitude]);
-        if (zoom) {
-          mapRef.current?.setCenter(
-            [position.coords.latitude, position.coords.longitude],
-            18,
-            {
-              duration: 500,
-            }
-          );
+        if (zoom && mapRef.current) {
+          setPositionLoading(true);
+          mapRef.current
+            .setCenter(
+              [position.coords.latitude, position.coords.longitude],
+              18,
+              {
+                duration: 500,
+              }
+            )
+            .then(() => {
+              setPositionLoading(false);
+            });
         }
       },
       (err) => console.log(err),
@@ -110,13 +140,18 @@ export default function MapPage() {
   };
 
   useEffect(() => {
-    getPosition(true);
     const interval = setInterval(() => {
       getPosition(false);
     }, 10000);
 
     return () => clearInterval(interval);
   }, [points]);
+
+  useEffect(() => {
+    return () => {
+      exitRoute();
+    };
+  }, []);
 
   useEffect(() => {
     const onBlur = () => {
@@ -201,19 +236,33 @@ export default function MapPage() {
     <div className="flex justify-center">
       <div
         className="fixed top-8 left-5 z-10 shadow-md p-3 bg-light-white rounded-2xl"
-        onClick={() => router.back()}
+        onClick={() => {
+          exitRoute();
+          router.push("/");
+        }}
       >
         <House className="size-7" />
       </div>
-      <div className="fixed top-8 right-5 z-10 shadow-md p-3 bg-light-white rounded-2xl flex flex-col gap-6">
-        <LocateFixed className='size-7' onClick={() => getPosition(true)} />
+      <div
+        className="fixed top-8 right-5 z-10 shadow-md p-3 bg-light-white rounded-2xl flex flex-col gap-6"
+        onClick={() => getPosition(true)}
+      >
+        {positionLoading ? (
+          <LoaderCircle className="size-7 animate-spin" />
+        ) : (
+          <LocateFixed className="size-7" />
+        )}
       </div>
       {points.length > 0 ? (
         <div
           className="fixed top-28 right-5 z-10 shadow-md p-3 bg-light-white rounded-2xl flex flex-col gap-6"
           onClick={() => setOnFeet((onFeet) => !onFeet)}
         >
-          {onFeet ? <Bus className='size-7' /> : <Footprints className='size-7' />}
+          {onFeet ? (
+            <Bus className="size-7" />
+          ) : (
+            <Footprints className="size-7" />
+          )}
         </div>
       ) : (
         ""
@@ -221,7 +270,7 @@ export default function MapPage() {
       {points.length > 0 ? (
         <div className="flex gap-4 flex-col justify-center items-center w-full fixed top-8 z-40">
           {routeLoading ? (
-            <div className="bg-white px-10 py-3 text-center rounded-xl animate-pulse text-sm shadow-lg">
+            <div className="bg-white px-3 py-3 text-center rounded-xl animate-pulse text-sm shadow-lg">
               Строим маршрут...
             </div>
           ) : (
