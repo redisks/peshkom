@@ -28,17 +28,17 @@
   }
 }
 
-@keyframes goBottom {
+@keyframes goTop {
   0% {
-    bottom: 0%;
+    top: 0%;
     opacity: 1;
   }
   50% {
-    bottom: -150%;
+    top: -150%;
     opacity: 0.25;
   }
   100% {
-    bottom: -200%;
+    top: -200%;
     opacity: 0;
   }
 }
@@ -52,7 +52,7 @@
 }
 
 .card-refresh {
-  animation: goBottom 0.5s ease-in 1;
+  animation: goTop 0.5s ease-in 1;
 }
 
 .card-end-right {

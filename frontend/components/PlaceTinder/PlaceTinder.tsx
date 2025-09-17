@@ -26,6 +26,13 @@ const PlaceTinder = ({
     "right" | "left" | "refresh" | null
   >(null);
   const [coords, setCoords] = useState<[number, number]>([0, 0]);
+  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(
+    null
+  );
+  const [touchEnd, setTouchEnd] = useState<{ x: number; y: number } | null>(
+    null
+  );
+  const [cardPosition, setCardPosition] = useState({ x: 0, y: 0 });
 
   const [yesPlaces, setYesPlaces] = useState<IPlace[]>([]);
   const [noPlaces, setNoPlaces] = useState<IPlace[]>([]);
@@ -40,7 +47,7 @@ const PlaceTinder = ({
     );
   }, []);
 
-  const handleSwipe = (direction: "left" | "right") => {
+  const handleSwipe = (direction: "left" | "right" | "refresh") => {
     if (isAnimating || places.length === 0) return;
 
     setIsAnimating(direction);
@@ -53,36 +60,95 @@ const PlaceTinder = ({
           setPlaces(places.filter((place) => place._id !== currentPlace._id));
         }
       } else if (direction === "right") {
-        newYesPlaces = Array.from(new Set([...yesPlaces, currentPlace]))
+        newYesPlaces = Array.from(new Set([...yesPlaces, currentPlace]));
         setYesPlaces(newYesPlaces);
         if (places.length > 1) {
           setPlaces(places.filter((place) => place._id !== currentPlace._id));
         }
+      } else if (direction === "refresh") {
+        setPlaces(places.sort(() => 0.5 - Math.random()));
       }
 
-      console.log(newYesPlaces);
-
-      if (places.length === 1) {
+      if (direction !== "refresh" && places.length === 1) {
         router.push(
           "/map?route=" + newYesPlaces.map((place) => place._id).join(";")
         );
       }
       setIsAnimating(null);
+      setCardPosition({ x: 0, y: 0 });
     }, 500);
   };
 
-  const handleRefresh = () => {
-    if (places.length > 1) {
-      if (isAnimating) return;
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart({
+      x: e.targetTouches[0].clientX,
+      y: e.targetTouches[0].clientY,
+    });
+  };
 
-      setIsAnimating("refresh");
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStart) return;
 
-      setTimeout(() => {
-        setPlaces(places.sort(() => 0.5 - Math.random()));
+    const touchCurrent = {
+      x: e.targetTouches[0].clientX,
+      y: e.targetTouches[0].clientY,
+    };
 
-        setIsAnimating(null);
-      }, 500);
+    // Calculate movement for animation
+    const diffX = touchCurrent.x - touchStart.x;
+    const diffY = touchCurrent.y - touchStart.y;
+
+    // Определяем, по какой оси идет движение
+    const isHorizontalSwipe = Math.abs(diffX) > Math.abs(diffY);
+
+    // Ограничиваем движение только по одной оси
+    if (isHorizontalSwipe) {
+      setCardPosition({ x: diffX, y: 0 });
+    } else {
+      setCardPosition({ x: 0, y: diffY });
     }
+
+    setTouchEnd(touchCurrent);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+
+    const diffX = touchEnd.x - touchStart.x;
+    const diffY = touchEnd.y - touchStart.y;
+
+    // Minimum swipe distance
+    const minSwipeDistance = 50;
+
+    // Определяем, по какой оси идет движение
+    const isHorizontalSwipe = Math.abs(diffX) > Math.abs(diffY);
+
+    if (isHorizontalSwipe) {
+      // Горизонтальный свайп
+      if (Math.abs(diffX) > minSwipeDistance) {
+        if (diffX > 0) {
+          handleSwipe("right");
+        } else {
+          handleSwipe("left");
+        }
+      } else {
+        // Reset position if swipe wasn't long enough
+        setCardPosition({ x: 0, y: 0 });
+      }
+    } else {
+      // Вертикальный свайп - ТОЛЬКО ВВЕРХ для refresh
+      if (diffY < 0 && Math.abs(diffY) > minSwipeDistance) {
+        // Только свайп вверх
+        handleSwipe("refresh");
+      } else {
+        // Игнорируем свайп вниз и короткие свайпы, просто сбрасываем позицию
+        setCardPosition({ x: 0, y: 0 });
+      }
+    }
+
+    setTouchStart(null);
+    setTouchEnd(null);
   };
 
   if (places.length === 0) {
@@ -139,10 +205,15 @@ const PlaceTinder = ({
           } relative z-10 flex flex-col justify-end w-full h-full p-6 text-light-white max-w-screen bg-cover`}
           style={{
             backgroundImage: `linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 1)), url(${currentPlace?.image})`,
+            transform: `translate(${cardPosition.x}px, ${cardPosition.y}px)`,
+            transition: touchStart ? "none" : "transform 0.2s ease",
           }}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         >
           <button
-            onClick={handleRefresh}
+            onClick={() => handleSwipe("refresh")}
             className={`p-3 rounded-full bg-gray-200 flex items-center justify-center shadow-lg hover:bg-gray-300 transition-colors mx-auto z-10 absolute top-5 right-5 ${
               places.length === 1 ? "opacity-0" : ""
             }`}
