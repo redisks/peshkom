@@ -204,7 +204,6 @@ export default function MapPage() {
             point.coordinates.lng,
           ]),
         ];
-        console.log(pointsArray)
 
         const multiRoute = new ymaps.multiRouter.MultiRoute(
           {

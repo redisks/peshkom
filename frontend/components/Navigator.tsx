@@ -1,5 +1,11 @@
 // NavigatorWithDrawer.tsx
-import React, { useContext, useState, useRef, RefObject } from "react";
+import React, {
+  useContext,
+  useState,
+  useRef,
+  RefObject,
+  useEffect,
+} from "react";
 import {
   ChevronUp,
   ChevronDown,
@@ -18,6 +24,7 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import Link from "next/link";
+import { places } from "@/data/places";
 
 const Navigator = ({
   mapRef,
@@ -39,7 +46,16 @@ const Navigator = ({
   const { points: finalPoints, setPoints: setFinalPoints } =
     useContext(PointsContext);
   const [open, setOpen] = useState(false);
-  const [points, setPoints] = useState(finalPoints);
+  const [points, setPoints] = useState(() => {
+    const endPoint = places.find(
+      (place) => place._id === localStorage.getItem("endPoint")
+    );
+    if (endPoint) {
+      return [...finalPoints, endPoint];
+    } else {
+      return finalPoints;
+    }
+  });
 
   // Переместить элемент вверх
   const moveUp = (index: number) => {
@@ -128,7 +144,7 @@ const Navigator = ({
             <Repeat className="size-4" />
           </Button>
           <Button
-            className="px-4 py-2 bg-light-white rounded-xl shadow-xl flex gap-2 text-light-black"
+            className="px-4 py-2 text-base bg-light-white rounded-xl shadow-xl flex gap-2 text-light-black"
             onClick={() => exitRoute()}
           >
             <span>Закрыть</span>
@@ -141,9 +157,9 @@ const Navigator = ({
       <div className="mt-2">
         <Drawer open={open} onOpenChange={setOpen}>
           <DrawerTrigger asChild>
-            <Button className="px-4 py-2 bg-light-white text-md rounded-xl shadow-xl text-light-black">
+            <Button className="px-4 py-2 bg-light-white text-base rounded-xl shadow-xl text-light-black">
               <span>Изменить</span>
-              <PencilLine className="size-5" />
+              <PencilLine className="size-4" />
             </Button>
           </DrawerTrigger>
 
@@ -164,7 +180,8 @@ const Navigator = ({
               <div className="space-y-3">
                 {points.map((place, index) => (
                   <div
-                    key={place._id}
+                    // key={place._id}
+                    key={index}
                     className="flex items-center p-4 bg-gray-50 border border-gray-200 rounded-lg gap-3 shadow-sm"
                     draggable
                     onDragStart={() => (dragItem.current = index)}
