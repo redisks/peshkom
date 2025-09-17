@@ -227,6 +227,20 @@ export default function MapPage() {
             setRouteLoaded(true);
             setRouteLoading(false);
           });
+          multiRoute.events.add("activeroutechange", () => {
+            setDistance(
+              multiRoute
+                ?.getActiveRoute()
+                // @ts-ignore
+                ?.properties.get("distance", { value: 0, text: "" }).text
+            );
+            setTime(
+              multiRoute
+                ?.getActiveRoute()
+                // @ts-ignore
+                ?.properties.get("duration", { value: 0, text: "" }).text
+            );
+          });
         }
       }
     }

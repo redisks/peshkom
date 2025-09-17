@@ -4,7 +4,6 @@ import React, {
   useState,
   useRef,
   RefObject,
-  useEffect,
 } from "react";
 import {
   ChevronUp,
@@ -13,7 +12,6 @@ import {
   Repeat,
   PencilLine,
   GripVertical,
-  CircleQuestionMark,
 } from "lucide-react";
 import { PointsContext } from "@/context/PointsContext";
 import { Button } from "@/components/ui/button";
@@ -25,6 +23,7 @@ import {
 } from "@/components/ui/drawer";
 import Link from "next/link";
 import { places } from "@/data/places";
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 const Navigator = ({
   mapRef,
@@ -115,16 +114,19 @@ const Navigator = ({
         <Link
           href={`/place/${finalPoints[0]?._id}`}
           target="_blank"
-          className="w-full border-1 shadow-md p-3 rounded-xl my-4 flex justify-between items-center gap-2"
+          className="w-full border-1 shadow-md p-3 rounded-xl my-4 flex justify-start items-center gap-4"
         >
+          <div className="bg-light-white shadow-xl rounded-full text-pale-orange p-0">
+            <Avatar className="size-10">
+              <AvatarImage src={finalPoints[0].image} />
+              <AvatarFallback>{finalPoints[0].name.slice(0, 2)}</AvatarFallback>
+            </Avatar>
+          </div>
           <div className="flex flex-col">
             <header className="text-sm text-neutral-500 font-light">
               Следующая точка:
             </header>
             <span>{finalPoints[0]?.name}</span>
-          </div>
-          <div className="bg-light-white shadow-xl rounded-full text-pale-orange p-0">
-            <CircleQuestionMark className="size-10" />
           </div>
         </Link>
         {localStorage.getItem("endPoint") ? (

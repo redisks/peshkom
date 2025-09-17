@@ -86,7 +86,7 @@ export default function Place() {
         width={300}
         height={300}
       />
-      <div className="w-full flex-1 bg-light-white border-pale-orange border-16 border-b-0 rounded-t-4xl flex flex-col gap-3 p-4 -mt-8">
+      <div className="w-full flex-1 bg-light-white rounded-t-4xl flex flex-col gap-3 p-6 -mt-8">
         <div className="text-2xl font-unbounded font-medium">
           {place.name}
         </div>

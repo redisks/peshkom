@@ -235,7 +235,7 @@ const PlaceTinder = ({
           <div className="relative flex justify-center items-center p-6">
             <button
               onClick={() => handleSwipe("left")}
-              className="w-40 h-40 rounded-full bg-neutral-500 backdrop-blur-2xl flex items-center justify-center shadow-lg transition-colors text-2xl font-medium absolute -bottom-10 -left-10 rounded-bl-2xl"
+              className="w-36 h-36 rounded-full bg-neutral-500 backdrop-blur-2xl flex items-center justify-center shadow-lg transition-colors text-xl font-medium absolute -bottom-10 -left-10 rounded-bl-2xl"
               style={{ boxShadow: "inset 5px 5px 10px white" }}
               aria-label="Не иду"
             >
@@ -243,7 +243,7 @@ const PlaceTinder = ({
             </button>
             <button
               onClick={() => handleSwipe("right")}
-              className="w-40 h-40 rounded-full bg-pale-orange backdrop-blur-2xl flex items-center justify-center shadow-lg transition-colors text-2xl font-medium absolute -bottom-10 -right-10 rounded-br-2xl"
+              className="w-36 h-36 rounded-full bg-pale-orange backdrop-blur-2xl flex items-center justify-center shadow-lg transition-colors text-xl font-medium absolute -bottom-10 -right-10 rounded-br-2xl"
               style={{ boxShadow: "inset 5px 5px 10px white" }}
               aria-label="Иду"
             >
