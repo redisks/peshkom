@@ -73,7 +73,7 @@ export default function Place() {
 
           <Heart
             className={`size-7 ${
-              isInFavorite ? "text-pale-orange" : "text-light-black"
+              isInFavorite ? "text-pale-orange fill-pale-orange" : "text-light-black"
             }`}
           />
           }

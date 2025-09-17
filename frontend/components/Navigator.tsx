@@ -1,12 +1,13 @@
 // NavigatorWithDrawer.tsx
-import React, { useContext, useState, useRef } from "react";
+import React, { useContext, useState, useRef, RefObject } from "react";
 import {
   ChevronUp,
   ChevronDown,
   X,
   Repeat,
-  LocateFixed,
+  PencilLine,
   GripVertical,
+  CircleQuestionMark,
 } from "lucide-react";
 import { PointsContext } from "@/context/PointsContext";
 import { Button } from "@/components/ui/button";
@@ -16,7 +17,7 @@ import {
   DrawerTrigger,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { RefObject } from "react";
+import Link from "next/link";
 
 const Navigator = ({
   mapRef,
@@ -91,19 +92,34 @@ const Navigator = ({
       {/* Основной интерфейс с информацией о маршруте */}
       <div className="flex-col w-full gap-2 justify-center items-center font-medium">
         <div className="flex gap-2 items-center justify-center text-lg">
-          <header className="text-center">
-            {time || "Загрузка..."}
-          </header>
-          <span>{
-            time
-            ?
-            '-'
-            :
-            ''
-          }</span>
+          <header className="text-center">{time || "Загрузка..."}</header>
+          <span>{time ? "-" : ""}</span>
           <div className="text-center">{distance}</div>
         </div>
-        <div className="w-full flex gap-4 justify-center items-center mt-4">
+        <Link
+          href={`/place/${finalPoints[0]?._id}`}
+          target="_blank"
+          className="w-full border-1 shadow-md p-3 rounded-xl my-4 flex justify-between items-center gap-2"
+        >
+          <div className="flex flex-col">
+            <header className="text-sm text-neutral-500 font-light">
+              Следующая точка:
+            </header>
+            <span>{finalPoints[0]?.name}</span>
+          </div>
+          <div className="bg-light-white shadow-xl rounded-full text-pale-orange p-0">
+            <CircleQuestionMark className="size-10" />
+          </div>
+        </Link>
+        {localStorage.getItem("endPoint") ? (
+          <div className="w-full text-center text-[12px] text-neutral-400 font-light">
+            На маршруте есть выбранная конечная точка:{" "}
+            {finalPoints[finalPoints.length - 1].name}
+          </div>
+        ) : (
+          ""
+        )}
+        <div className="w-full flex gap-4 justify-center items-center mt-6">
           <Button
             className="px-4 py-2 bg-light-white rounded-xl shadow-xl text-light-black"
             onClick={() => loadRoute(coords, points)}
@@ -122,12 +138,13 @@ const Navigator = ({
       </div>
 
       {/* Кнопка "Изменить" внизу */}
-      <div className="mt-4">
+      <div className="mt-2">
         <Drawer open={open} onOpenChange={setOpen}>
           <DrawerTrigger asChild>
-            <button className="text-gray-500 text-lg hover:text-gray-700 transition-colors">
-              Изменить
-            </button>
+            <Button className="px-4 py-2 bg-light-white text-md rounded-xl shadow-xl text-light-black">
+              <span>Изменить</span>
+              <PencilLine className="size-5" />
+            </Button>
           </DrawerTrigger>
 
           <DrawerContent className="h-[90vh] flex flex-col">

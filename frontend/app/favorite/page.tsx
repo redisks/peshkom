@@ -1,7 +1,7 @@
 // app/favorites/page.tsx
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useFavorites } from "@/hooks/useFavorites";
 import { FavoriteType } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,12 +23,17 @@ import Link from "next/link";
 export default function FavoritesPage() {
   const { favorites, removeFavorite, clearFavorites, hasFavorites } =
     useFavorites();
+  const [endPoint, setEndPoint] = useState<string>("");
   const [showClearAlert, setShowClearAlert] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<{
     id: string;
     type: FavoriteType;
     name: string;
   } | null>(null);
+
+  useEffect(() => {
+    setEndPoint(localStorage.getItem("endPoint") ?? "");
+  }, []);
 
   const handleClearAll = () => {
     setShowClearAlert(true);
@@ -86,7 +91,7 @@ export default function FavoritesPage() {
           <section>
             <div className="flex items-center gap-2 mb-4">
               <MapPin className="w-6 h-6 text-pale-orange" />
-              <h2 className="text-xl font-semibold">Любимые места</h2>
+              <h2 className="text-lg font-semibold">Любимые места</h2>
               <Badge variant="secondary" className="ml-2">
                 {favorites.places.length}
               </Badge>
@@ -129,6 +134,33 @@ export default function FavoritesPage() {
                           ★ {place.rating}
                         </Badge>
                       </div>
+                      <div
+                        className={`text-sm text-center p-2 border-1 shadow-md mt-4 rounded-xl ${
+                          endPoint === place._id
+                            ? "bg-light-black text-light-white"
+                            : "bg-light-white text-light-black transition-colors"
+                        }`}
+                        onClick={(evt) => {
+                          evt.stopPropagation();
+                          evt.preventDefault();
+                          if (localStorage.getItem("endPoint") === place._id) {
+                            setEndPoint("");
+                            localStorage.setItem("endPoint", "");
+                          } else {
+                            setEndPoint((endPoint) =>
+                              endPoint === place._id ? "" : place._id
+                            );
+                            localStorage.setItem("endPoint", place._id);
+                          }
+                        }}
+                      >
+                        {endPoint === place._id
+                          ? "Убрать конечную точку"
+                          : "Сделать конечной точкой"}
+                      </div>
+                      <span className="flex text-sm font-light text-center text-neutral-400 w-full mt-2">
+                        этой точкой будут заканчиваться маршруты
+                      </span>
                     </CardContent>
                   </Card>
                 </Link>
@@ -142,7 +174,7 @@ export default function FavoritesPage() {
           <section className="pb-20">
             <div className="flex items-center gap-2 mb-4">
               <Route className="w-6 h-6 text-pale-orange" />
-              <h2 className="text-xl font-semibold">Любимые маршруты</h2>
+              <h2 className="text-lg font-semibold">Любимые маршруты</h2>
               <Badge variant="secondary" className="ml-2">
                 {favorites.routes.length}
               </Badge>

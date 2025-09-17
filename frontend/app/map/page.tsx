@@ -27,6 +27,7 @@ import { PointsContext } from "@/context/PointsContext";
 import { useSearchParams } from "next/navigation";
 import { FavoriteType, IPlace } from "@/lib/types";
 import Navigator from "@/components/Navigator";
+import { places } from "@/data/places";
 import { posts } from "@/data/posts";
 import { favoritesService } from "@/lib/favorites";
 import { useFavorites } from "@/hooks/useFavorites";
@@ -121,7 +122,6 @@ export default function MapPage() {
     setPositionLoading(true);
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        console.log(position);
         if (
           !windowBlurred &&
           points.length > 0 &&
@@ -185,36 +185,50 @@ export default function MapPage() {
 
   function loadRoute(coords: [number, number], points: IPlace[]) {
     if (ymaps && points.length > 0) {
-      setDrawerOpened(false);
-      setRouteLoaded(true);
-      const multiRoute = new ymaps.multiRouter.MultiRoute(
-        {
-          referencePoints: [
-            coords,
-            ...points.map((point) => [
-              point.coordinates.lat,
-              point.coordinates.lng,
-            ]),
-          ],
-          params: {
-            routingMode: onFeet ? "pedestrian" : "masstransit",
-          },
-        },
-        {
-          mapStateAutoApply: true,
-          boundsAutoApply: true,
-        }
+      const place = places.find(
+        (place) => place._id === localStorage.getItem("endPoint")
       );
+      if (
+        localStorage.getItem("endPoint") &&
+        place &&
+        place._id !== points[points.length - 1]._id
+      ) {
+        setPoints((points) => [...points, place]);
+      } else {
+        setDrawerOpened(false);
+        setRouteLoaded(false);
+        const pointsArray = [
+          coords,
+          ...points.map((point) => [
+            point.coordinates.lat,
+            point.coordinates.lng,
+          ]),
+        ];
+        console.log(pointsArray)
 
-      if (mapRef.current) {
-        mapRef.current.geoObjects.splice(1, 1);
-        mapRef.current.geoObjects.add(multiRoute);
-        setRouteLoading(true);
-        multiRoute.events.add("update", () => {
-          setCurrentRoute(multiRoute);
-          setRouteLoaded(true);
-          setRouteLoading(false);
-        });
+        const multiRoute = new ymaps.multiRouter.MultiRoute(
+          {
+            referencePoints: pointsArray,
+            params: {
+              routingMode: onFeet ? "pedestrian" : "masstransit",
+            },
+          },
+          {
+            mapStateAutoApply: true,
+            boundsAutoApply: true,
+          }
+        );
+
+        if (mapRef.current) {
+          mapRef.current.geoObjects.splice(1, 1);
+          mapRef.current.geoObjects.add(multiRoute);
+          setRouteLoading(true);
+          multiRoute.events.add("update", () => {
+            setCurrentRoute(multiRoute);
+            setRouteLoaded(true);
+            setRouteLoading(false);
+          });
+        }
       }
     }
   }
@@ -269,8 +283,8 @@ export default function MapPage() {
       <div
         className="fixed top-8 left-5 z-10 shadow-md p-3 bg-light-white rounded-2xl"
         onClick={() => {
-          exitRoute();
           router.push("/");
+          exitRoute();
         }}
       >
         <House className="size-7" />
@@ -280,15 +294,17 @@ export default function MapPage() {
           className="fixed top-26 left-5 z-10 shadow-md p-3 bg-light-white rounded-2xl"
           onClick={() => toggleFavorite(points)}
         >
-          {isInFavorite === null
-          ?
-          <LoaderCircle className="size-7 animate-spin" />
-        :
-        <Heart
-            className={`size-7 ${
-              isInFavorite ? "text-pale-orange" : "text-light-black"
-            }`}
-          />}
+          {isInFavorite === null ? (
+            <LoaderCircle className="size-7 animate-spin" />
+          ) : (
+            <Heart
+              className={`size-7 ${
+                isInFavorite
+                  ? "text-pale-orange fill-pale-orange"
+                  : "text-light-black"
+              }`}
+            />
+          )}
         </div>
       ) : (
         ""
@@ -361,7 +377,7 @@ export default function MapPage() {
         ""
       )}
 
-      {routeLoaded ? (
+      {points.length > 0 ? (
         <div className="fixed bottom-0 z-10 bg-light-white w-full p-5 flex gap-4 rounded-t-3xl shadow-xl flex-col">
           <Navigator
             mapRef={mapRef}
