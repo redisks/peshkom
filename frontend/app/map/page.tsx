@@ -11,6 +11,7 @@ import {
   House,
   ExternalLink,
   SquareArrowOutUpRight,
+  Check,
 } from "lucide-react";
 import {
   Drawer,
@@ -284,18 +285,28 @@ export default function MapPage() {
         <div
           className="fixed top-44 right-5 z-10 shadow-md p-3 bg-light-white rounded-2xl"
           onClick={() => {
+            setShared(true);
             navigator.share({
               title: "Маршрут",
-              text:
-                window.location.origin +
-                `/map?route=${points.map((point) => point._id).join(";")}`,
               url:
                 window.location.origin +
                 `/map?route=${points.map((point) => point._id).join(";")}`,
             });
+            // navigator.clipboard
+            //   .writeText(
+            //     window.location.origin +
+            //       `/map?route=${points.map((point) => point._id).join(";")}`
+            //   )
+            //   .then(() => {
+            //     setShared(true);
+            //   });
           }}
         >
-          <SquareArrowOutUpRight className="size-7" />
+          {shared ? (
+            <Check className="size-7" />
+          ) : (
+            <SquareArrowOutUpRight className="size-7" />
+          )}
         </div>
       ) : (
         ""
