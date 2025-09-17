@@ -9,6 +9,8 @@ import {
   Search,
   LocateFixed,
   House,
+  ExternalLink,
+  SquareArrowOutUpRight,
 } from "lucide-react";
 import {
   Drawer,
@@ -30,7 +32,7 @@ import { PointsContext } from "@/context/PointsContext";
 import { useSearchParams } from "next/navigation";
 import { IPlace } from "@/lib/types";
 import Navigator from "@/components/Navigator";
-import { posts } from '@/data/posts';
+import { posts } from "@/data/posts";
 
 export default function MapPage() {
   const mapRef = useRef<ymaps.Map>(undefined);
@@ -51,6 +53,7 @@ export default function MapPage() {
   const [distance, setDistance] = useState("");
   const [time, setTime] = useState("");
   const [positionLoading, setPositionLoading] = useState(false);
+  const [shared, setShared] = useState(false);
 
   const searchParams = useSearchParams();
 
@@ -228,6 +231,15 @@ export default function MapPage() {
     loadRoute(coords, points);
   }, [onFeet]);
 
+  useEffect(() => {
+    if (shared) {
+      const timeout = setTimeout(() => {
+        setShared(false);
+      }, 2000);
+      return () => clearTimeout(timeout);
+    }
+  }, [shared]);
+
   if (!ymaps) {
     // TODO: loading
     return null;
@@ -256,7 +268,7 @@ export default function MapPage() {
       </div>
       {points.length > 0 ? (
         <div
-          className="fixed top-28 right-5 z-10 shadow-md p-3 bg-light-white rounded-2xl flex flex-col gap-6"
+          className="fixed top-26 right-5 z-10 shadow-md p-3 bg-light-white rounded-2xl flex flex-col gap-6"
           onClick={() => setOnFeet((onFeet) => !onFeet)}
         >
           {onFeet ? (
@@ -264,6 +276,26 @@ export default function MapPage() {
           ) : (
             <Footprints className="size-7" />
           )}
+        </div>
+      ) : (
+        ""
+      )}
+      {points.length > 0 ? (
+        <div
+          className="fixed top-44 right-5 z-10 shadow-md p-3 bg-light-white rounded-2xl"
+          onClick={() => {
+            navigator.share({
+              title: "Маршрут",
+              text:
+                window.location.origin +
+                `/map?route=${points.map((point) => point._id).join(";")}`,
+              url:
+                window.location.origin +
+                `/map?route=${points.map((point) => point._id).join(";")}`,
+            });
+          }}
+        >
+          <SquareArrowOutUpRight className="size-7" />
         </div>
       ) : (
         ""
@@ -306,20 +338,23 @@ export default function MapPage() {
               </div>
               <Search className="size-6 text-neutral-500 absolute right-4" />
             </div>
-            <div className='w-full px-3 flex items-center gap-2'>
+            <div className="w-full px-3 flex items-center gap-2">
               <Sparkle className="size-6" />
-              <span>Рекомендуем</span>
+              <span>Вам понравится</span>
             </div>
-            <div className="w-full px-3 flex flex-col gap-2 max-h-[150px] overflow-y-scroll pb-10">
-              {
-                posts.slice(0, 3)
-                .map(post => (
-                  <div className='w-full flex text-start text-base font-light p-5 rounded-xl shadow-lg' onClick={(evt) => {
+            <div className="w-full px-3 flex flex-col gap-2 max-h-[200px] overflow-y-scroll pb-10">
+              {posts.slice(0, 5).map((post) => (
+                <div
+                  className="w-full flex text-start text-base font-light p-5 rounded-xl shadow-lg"
+                  key={post._id}
+                  onClick={(evt) => {
                     evt.stopPropagation();
                     setPoints(post.route.places);
-                  }}>{post.title}</div>
-                ))
-              }
+                  }}
+                >
+                  {post.title}
+                </div>
+              ))}
             </div>
           </DrawerTrigger>
           <DrawerContent className="h-[95%]">
@@ -336,7 +371,8 @@ export default function MapPage() {
         defaultOptions={{
           suppressMapOpenBlock: true,
         }}
-        className="w-full h-screen fixed top-0"
+        className="w-full fixed top-1"
+        style={{ height: "calc(100vh - 25vh)" }}
         modules={["multiRouter.MultiRoute"]}
         instanceRef={mapRef}
         onLoad={() => loadRoute(coords, points)}
