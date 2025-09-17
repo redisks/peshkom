@@ -105,6 +105,7 @@ export default function MapPage() {
   }, [points, ymaps, mapRef]);
 
   const getPosition = (zoom: boolean = false) => {
+    setPositionLoading(true);
     navigator.geolocation.getCurrentPosition(
       (position) => {
         if (
@@ -120,7 +121,6 @@ export default function MapPage() {
         }
         setCoords([position.coords.latitude, position.coords.longitude]);
         if (zoom && mapRef.current) {
-          setPositionLoading(true);
           mapRef.current
             .setCenter(
               [position.coords.latitude, position.coords.longitude],
@@ -300,10 +300,9 @@ export default function MapPage() {
         >
           <DrawerTrigger className="fixed bottom-0 z-10 bg-light-white w-full p-5 flex items-stretch justify-between gap-4 rounded-t-3xl shadow-xl">
             <div className="flex flex-1 items-center relative">
-              <Input
-                placeholder="Куда?"
-                className="flex-1 h-full shadow-md py-4 rounded-2xl"
-              />
+              <div className="flex-1 h-full shadow-md py-4 rounded-2xl flex pl-5 text-neutral-500 border-1">
+                Куда?
+              </div>
               <Search className="size-6 text-neutral-500 absolute right-4" />
             </div>
             {/* <div className="p-3 bg-light-white shadow-md rounded-2xl">
