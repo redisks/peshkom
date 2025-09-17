@@ -2,6 +2,7 @@
 
 import { Map, useYMaps, Placemark } from "@iminside/react-yandex-maps";
 import {
+  Sparkle,
   LoaderCircle,
   Bus,
   Footprints,
@@ -17,7 +18,6 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { useRouter } from "next/navigation";
-import { Input } from "@/components/ui/input";
 import GlobalSearch from "@/components/GlobalSearch";
 import {
   useEffect,
@@ -30,6 +30,7 @@ import { PointsContext } from "@/context/PointsContext";
 import { useSearchParams } from "next/navigation";
 import { IPlace } from "@/lib/types";
 import Navigator from "@/components/Navigator";
+import { posts } from '@/data/posts';
 
 export default function MapPage() {
   const mapRef = useRef<ymaps.Map>(undefined);
@@ -298,16 +299,28 @@ export default function MapPage() {
           open={drawerOpened}
           onOpenChange={(open) => setDrawerOpened(open)}
         >
-          <DrawerTrigger className="fixed bottom-0 z-10 bg-light-white w-full p-5 flex items-stretch justify-between gap-4 rounded-t-3xl shadow-xl">
-            <div className="flex flex-1 items-center relative">
+          <DrawerTrigger className="fixed bottom-0 z-10 bg-light-white flex-col w-full p-5 flex items-center justify-between gap-4 rounded-t-3xl shadow-xl">
+            <div className="flex flex-1 items-center relative w-full">
               <div className="flex-1 h-full shadow-md py-4 rounded-2xl flex pl-5 text-neutral-500 border-1">
                 Куда?
               </div>
               <Search className="size-6 text-neutral-500 absolute right-4" />
             </div>
-            {/* <div className="p-3 bg-light-white shadow-md rounded-2xl">
-              <Sparkle className="size-8" />
-            </div> */}
+            <div className='w-full px-3 flex items-center gap-2'>
+              <Sparkle className="size-6" />
+              <span>Рекомендуем</span>
+            </div>
+            <div className="w-full px-3 flex flex-col gap-2 max-h-[150px] overflow-y-scroll pb-10">
+              {
+                posts.slice(0, 3)
+                .map(post => (
+                  <div className='w-full flex text-start text-base font-light p-5 rounded-xl shadow-lg' onClick={(evt) => {
+                    evt.stopPropagation();
+                    setPoints(post.route.places);
+                  }}>{post.title}</div>
+                ))
+              }
+            </div>
           </DrawerTrigger>
           <DrawerContent className="h-[95%]">
             <DrawerHeader className="w-full flex items-stretch justify-between">

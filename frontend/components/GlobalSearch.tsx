@@ -154,7 +154,7 @@ export default function GlobalSearch({ coords }: { coords: [number, number] }) {
                   </Avatar>
                 </Link>
                 <div className="flex flex-col">
-                  <div className="font-medium text-lg">{place.name}</div>
+                  <div className="font-medium text-base">{place.name}</div>
                   <span className="text-sm text-neutral-400">
                     {calculateDistance(
                       coords[0],
