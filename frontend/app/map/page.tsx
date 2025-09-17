@@ -9,9 +9,9 @@ import {
   Search,
   LocateFixed,
   House,
-  ExternalLink,
   SquareArrowOutUpRight,
   Check,
+  Heart,
 } from "lucide-react";
 import {
   Drawer,
@@ -22,20 +22,18 @@ import {
 } from "@/components/ui/drawer";
 import { useRouter } from "next/navigation";
 import GlobalSearch from "@/components/GlobalSearch";
-import {
-  useEffect,
-  useState,
-  useRef,
-  useContext,
-  useLayoutEffect,
-} from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import { PointsContext } from "@/context/PointsContext";
 import { useSearchParams } from "next/navigation";
-import { IPlace } from "@/lib/types";
+import { FavoriteType, IPlace } from "@/lib/types";
 import Navigator from "@/components/Navigator";
 import { posts } from "@/data/posts";
+import { favoritesService } from "@/lib/favorites";
+import { useFavorites } from "@/hooks/useFavorites";
 
 export default function MapPage() {
+  const { favorites, isFavorite, removeFavorite, addFavorite } = useFavorites();
+
   const mapRef = useRef<ymaps.Map>(undefined);
   const ymaps = useYMaps(["multiRouter.MultiRoute"]);
   const router = useRouter();
@@ -55,6 +53,7 @@ export default function MapPage() {
   const [time, setTime] = useState("");
   const [positionLoading, setPositionLoading] = useState(false);
   const [shared, setShared] = useState(false);
+  const [isInFavorite, setIsInFavorite] = useState<boolean | null>(null);
 
   const searchParams = useSearchParams();
 
@@ -83,7 +82,7 @@ export default function MapPage() {
     enableHighAccuracy: false,
   };
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const timeout = setTimeout(() => {
       if (!("geolocation" in navigator)) {
         console.log("Геолокация не поддерживется на данном устройстве");
@@ -107,12 +106,22 @@ export default function MapPage() {
       getPosition(true);
     }
     loadRoute(coords, points);
+    setIsInFavorite(
+      isFavorite(favoritesService.generateRouteId(points), FavoriteType.ROUTE)
+    );
   }, [points, ymaps, mapRef]);
+
+  useEffect(() => {
+    setIsInFavorite(
+      isFavorite(favoritesService.generateRouteId(points), FavoriteType.ROUTE)
+    );
+  }, [favorites]);
 
   const getPosition = (zoom: boolean = false) => {
     setPositionLoading(true);
     navigator.geolocation.getCurrentPosition(
       (position) => {
+        console.log(position);
         if (
           !windowBlurred &&
           points.length > 0 &&
@@ -241,6 +250,15 @@ export default function MapPage() {
     }
   }, [shared]);
 
+  function toggleFavorite(pointsSelected: IPlace[] = points) {
+    const routeId = favoritesService.generateRouteId(pointsSelected);
+    if (isInFavorite) {
+      removeFavorite(routeId, FavoriteType.ROUTE);
+    } else {
+      addFavorite(points, FavoriteType.ROUTE);
+    }
+  }
+
   if (!ymaps) {
     // TODO: loading
     return null;
@@ -257,6 +275,24 @@ export default function MapPage() {
       >
         <House className="size-7" />
       </div>
+      {points.length > 0 ? (
+        <div
+          className="fixed top-26 left-5 z-10 shadow-md p-3 bg-light-white rounded-2xl"
+          onClick={() => toggleFavorite(points)}
+        >
+          {isInFavorite === null
+          ?
+          <LoaderCircle className="size-7 animate-spin" />
+        :
+        <Heart
+            className={`size-7 ${
+              isInFavorite ? "text-pale-orange" : "text-light-black"
+            }`}
+          />}
+        </div>
+      ) : (
+        ""
+      )}
       <div
         className="fixed top-8 right-5 z-10 shadow-md p-3 bg-light-white rounded-2xl flex flex-col gap-6"
         onClick={() => getPosition(true)}
@@ -314,7 +350,7 @@ export default function MapPage() {
       {points.length > 0 ? (
         <div className="flex gap-4 flex-col justify-center items-center w-full fixed top-8 z-40">
           {routeLoading ? (
-            <div className="bg-white px-3 py-3 text-center rounded-xl animate-pulse text-sm shadow-lg">
+            <div className="bg-light-white px-3 py-3 text-center rounded-xl animate-pulse text-sm shadow-lg">
               Строим маршрут...
             </div>
           ) : (

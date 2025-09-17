@@ -254,7 +254,7 @@ const PlaceTinder = ({
 
         {/* Анимация свайпа */}
         {isAnimating && (
-          <div className="absolute inset-0 bg-white/20 animate-pulse" />
+          <div className="absolute inset-0 bg-light-white/20 animate-pulse" />
         )}
       </div>
       <div className="w-full text-center flex justify-between items-center px-5">

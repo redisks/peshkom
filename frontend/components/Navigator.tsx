@@ -87,37 +87,42 @@ const Navigator = ({
   };
 
   return (
-    <div className="relative w-full flex flex-col items-center gap-2 py-5">
+    <div className="relative w-full flex flex-col items-center gap-2 py-3">
       {/* Основной интерфейс с информацией о маршруте */}
-      <div className="flex-col w-full gap-4 justify-center items-center font-medium">
-        <header className="text-center w-full text-lg">
-          {time || "Загрузка..."}
-        </header>
-        <div className="text-center w-full">{distance}</div>
+      <div className="flex-col w-full gap-2 justify-center items-center font-medium">
+        <div className="flex gap-2 items-center justify-center text-lg">
+          <header className="text-center">
+            {time || "Загрузка..."}
+          </header>
+          <span>{
+            time
+            ?
+            '-'
+            :
+            ''
+          }</span>
+          <div className="text-center">{distance}</div>
+        </div>
         <div className="w-full flex gap-4 justify-center items-center mt-4">
-          <div
-            className="p-5 bg-light-white rounded-[50%] shadow-xl"
+          <Button
+            className="px-4 py-2 bg-light-white rounded-xl shadow-xl text-light-black"
             onClick={() => loadRoute(coords, points)}
           >
-            <Repeat className="size-8" />
-          </div>
-          {/* <div
-            className="p-5 bg-light-white rounded-[50%] shadow-xl"
-            onClick={() => getPosition(true)}
-          >
-            <LocateFixed className="size-8" />
-          </div> */}
-          <div
-            className="p-4 bg-light-white rounded-[50%] shadow-xl"
+            <span>Обновить</span>
+            <Repeat className="size-4" />
+          </Button>
+          <Button
+            className="px-4 py-2 bg-light-white rounded-xl shadow-xl flex gap-2 text-light-black"
             onClick={() => exitRoute()}
           >
-            <X className="size-8" />
-          </div>
+            <span>Закрыть</span>
+            <X className="size-4" />
+          </Button>
         </div>
       </div>
 
       {/* Кнопка "Изменить" внизу */}
-      <div className="mt-6">
+      <div className="mt-4">
         <Drawer open={open} onOpenChange={setOpen}>
           <DrawerTrigger asChild>
             <button className="text-gray-500 text-lg hover:text-gray-700 transition-colors">
@@ -151,7 +156,7 @@ const Navigator = ({
                     onDragOver={(e) => e.preventDefault()}
                   >
                     <div className="flex-1 flex flex-wrap items-center gap-3">
-                      <div className="font-bold text-gray-500 min-w-[30px] h-[30px] flex items-center justify-center bg-white rounded-full">
+                      <div className="font-bold text-gray-500 min-w-[30px] h-[30px] flex items-center justify-center bg-light-white rounded-full">
                         {index + 1}
                       </div>
                       <div className="font-medium flex-1">{place.name}</div>
@@ -184,7 +189,7 @@ const Navigator = ({
             </div>
 
             {/* Кнопка Сохранить внизу */}
-            <div className="p-4 border-t bg-white">
+            <div className="p-4 border-t bg-light-white">
               <Button
                 className="w-full py-6 rounded-2xl text-light-white flex justify-center items-center gap-4"
                 style={{

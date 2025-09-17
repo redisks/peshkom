@@ -40,3 +40,15 @@ export interface IPlace {
   }[];
   image: string;
 }
+
+export type FavoriteItem = IPlace | IPlace[];
+
+export enum FavoriteType {
+  PLACE = 'place',
+  ROUTE = 'route'
+}
+
+export interface FavoritesState {
+  places: IPlace[];
+  routes: IPlace[][];
+}

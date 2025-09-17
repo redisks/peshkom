@@ -184,8 +184,8 @@ export default function GlobalSearch({ coords }: { coords: [number, number] }) {
             style={{ background: "radial-gradient(#FD4B27 33%, #FE9F5D 75%)" }}
             onClick={() => setPoints(selectedAddresses)}
           >
-            <span className="text-2xl font-medium">Добавить</span>
-            <Plus className="size-8" />
+            <span className="text-2xl font-medium">Пошли!</span>
+            <Footprints className="size-8" />
           </Button>
         </div>
       ) : (

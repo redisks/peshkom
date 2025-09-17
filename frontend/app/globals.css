@@ -19,7 +19,8 @@
 }
 
 body {
-  font-family: --font-unbounded;
+  font-family: var(--font-unbounded);
+  color: var(--foreground);
   touch-action: pan-y;
   scrollbar-gutter: stable;
   overflow-x: hidden;

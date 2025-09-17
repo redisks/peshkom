@@ -8,6 +8,7 @@ import { posts } from "@/data/posts";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 export default function Post() {
   const { postId } = useParams();
@@ -57,13 +58,13 @@ export default function Post() {
 
       <div className="flex flex-col gap-2 border-t py-4">
         <h3 className='font-semibold'>Маршрут</h3>
-        <ul className='py-2'>
+        <section className='flex flex-col gap-2 py-2'>
           {
             post.route.places.map((point, index) => (
-              <li key={index}>{index + 1}. {point.name}</li>
+              <Link href={`/place/${point._id}`} key={index} className='underline'>{index + 1}. {point.name}</Link>
             ))
           }
-        </ul>
+        </section>
         <Button style={{ background: "radial-gradient(#FD4B27 33%, #FE9F5D 75%)" }} onClick={() => router.push(`/map?route=${post.route.places.map(p => p._id).join(';')}`)}>
           Открыть маршрут
         </Button>
